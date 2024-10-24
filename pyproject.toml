@@ -3,11 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "smas"
+name = "algmatch"
 version = "0.0.1"
 authors = [
   { name="Varad Kulkarni", email="varadkulk123@gmail.com" },
-  { name="Sofiat Olaosebikan", email="sofiat.olaosebikan@glasgow.ac.uk"}
+  { name="Sofiat Olaosebikan", email="sofiat.olaosebikan@glasgow.ac.uk" },
+  { name="Ben Whitehead", email="2732382W@student.gla.ac.uk"}
 ]
 description = "A package containing various stable matching algorithms, such as stable marriage, hospital-residents, and student-project allocation."
 readme = "README.md"
