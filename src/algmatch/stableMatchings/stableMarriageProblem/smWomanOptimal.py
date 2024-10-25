@@ -42,5 +42,5 @@ class SMWomanOptimal(SMAbstract):
             self._engage(m,w)
 
             rank_w = self.men[m]["rank"][w]
-            for reject in self.men[m]["list"][rank_w:]:
+            for reject in self.men[m]["list"][rank_w+1:]:
                 self._delete_pair(m,reject)
