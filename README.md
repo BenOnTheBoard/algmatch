@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/854564426.svg)](https://doi.org/10.5281/zenodo.17752189)
+
 # Algmatch
 
 A package containing various two-sided matching algorithms. 
