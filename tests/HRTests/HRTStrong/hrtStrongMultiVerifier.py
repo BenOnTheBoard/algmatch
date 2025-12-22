@@ -36,12 +36,12 @@ class HRTSuperMultiVerifier(HRTSuperV, AMV):
 
 
 def main():
-    TOTAL_RESIDENTS = 12
-    TOTAL_HOSPITALS = 5
+    TOTAL_RESIDENTS = 5
+    TOTAL_HOSPITALS = 3
     LOWER_LIST_BOUND = 0
     UPPER_LIST_BOUND = 3
     REPETITIONS = 20_000  # per thread
-    THREADS = 4
+    THREADS = 12
 
     start = perf_counter_ns()
 

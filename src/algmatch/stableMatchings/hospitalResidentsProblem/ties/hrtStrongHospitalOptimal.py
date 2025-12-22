@@ -126,7 +126,7 @@ class HRTStrongHospitalOptimal(HRTStrongAbstract):
             C = self._get_critical_set()
             for r in C:
                 self._delete_tail(r)
-                self._double_bound_deletions()
+            self._double_bound_deletions()
 
         self._select_feasible_matching()
 
