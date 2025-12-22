@@ -125,6 +125,8 @@ class HRTAbstract:
                         return False
 
             for hospital in indifferent_hospitals:
+                if hospital == matched_hospital:
+                    continue
                 if (
                     len(self.M[hospital]["assigned"])
                     < self.hospitals[hospital]["capacity"]
