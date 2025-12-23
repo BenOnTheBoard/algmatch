@@ -1,9 +1,15 @@
 """
-Class to provide interface for the Hospital/Residents Problem With Ties algorithm.
+Class to provide interface for the Hospital/Residents Problem With Ties algorithms.
 """
 
 import os
 
+from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongResidentOptimal import (
+    HRTStrongResidentOptimal,
+)
+from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongHospitalOptimal import (
+    HRTStrongHospitalOptimal,
+)
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtSuperResidentOptimal import (
     HRTSuperResidentOptimal,
 )
@@ -69,7 +75,14 @@ class HospitalResidentsProblemWithTies:
                     filename=self.filename, dictionary=self.dictionary
                 )
         elif self.stability_type == "strong":
-            raise NotImplementedError("Strong algorithms are not yet available.")
+            if self.optimised_side == "residents":
+                self.hr_alg = HRTStrongResidentOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
+            else:
+                self.hr_alg = HRTStrongHospitalOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
         else:
             raise ValueError('stability_type must be either "strong" or "super".')
 

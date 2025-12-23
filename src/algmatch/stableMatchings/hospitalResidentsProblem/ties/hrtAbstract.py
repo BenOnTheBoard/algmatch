@@ -101,11 +101,13 @@ class HRTAbstract:
         for resident, r_prefs in self.original_residents.items():
             matched_hospital = self.M[resident]["assigned"]
 
-            preferred_hospitals = r_prefs["list"]
             if matched_hospital is not None:
                 rank_worst_matched_hospital = r_prefs["rank"][matched_hospital]
                 preferred_hospitals = r_prefs["list"][:rank_worst_matched_hospital]
-                indifferent_hospitals = r_prefs["list"][rank_worst_matched_hospital + 1]
+                indifferent_hospitals = r_prefs["list"][rank_worst_matched_hospital]
+            else:
+                preferred_hospitals = r_prefs["list"]
+                indifferent_hospitals = []
 
             for h_tie in preferred_hospitals:
                 for hospital in h_tie:
@@ -123,6 +125,8 @@ class HRTAbstract:
                         return False
 
             for hospital in indifferent_hospitals:
+                if hospital == matched_hospital:
+                    continue
                 if (
                     len(self.M[hospital]["assigned"])
                     < self.hospitals[hospital]["capacity"]
@@ -138,21 +142,19 @@ class HRTAbstract:
 
         return True
 
-    def _get_pref_list(self, participant) -> list:
+    def _get_prefs(self, participant) -> list:
         if participant in self.residents:
-            return self.residents[participant]["list"]
+            return self.residents[participant]
         elif participant in self.hospitals:
-            return self.hospitals[participant]["list"]
+            return self.hospitals[participant]
         else:
             raise ValueError(f"{participant} is not a resident or a hospital")
 
-    def _get_pref_ranks(self, participant) -> list:
-        if participant in self.residents:
-            return self.residents[participant]["rank"]
-        elif participant in self.hospitals:
-            return self.hospitals[participant]["rank"]
-        else:
-            raise ValueError(f"{participant} is not a resident or a hospital")
+    def _get_pref_list(self, participant) -> list:
+        return self._get_prefs(participant)["list"]
+
+    def _get_pref_ranks(self, participant) -> dict:
+        return self._get_prefs(participant)["rank"]
 
     def _get_pref_length(self, person) -> int:
         pref_list = self._get_pref_list(person)
@@ -218,6 +220,11 @@ class HRTAbstract:
                 self._break_assignment(target, reject)
                 self._delete_pair(target, reject)
 
+    def _neighbourhood(self, people):
+        if not people:
+            return set()
+        return set.union(*[self.M[person]["assigned"] for person in people])
+
     def _while_loop(self) -> bool:
         raise NotImplementedError("Method _while_loop must be implemented in subclass")
 
@@ -246,5 +253,5 @@ class HRTAbstract:
                 self.is_stable = self._check_strong_stability()
 
             if self.is_stable:
-                return f"super-stable matching: {self.stable_matching}"
-        return "no super-stable matching"
+                return f"stable matching: {self.stable_matching}"
+        return "no stable matching"
