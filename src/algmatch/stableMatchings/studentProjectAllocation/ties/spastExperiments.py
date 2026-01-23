@@ -62,6 +62,7 @@ Params:
     num_projects: {num_projects}
     num_lecturers: {num_lecturers}
     runs: {runs}
+    kwargs: {kwargs}
     """, file=f)
 
 
