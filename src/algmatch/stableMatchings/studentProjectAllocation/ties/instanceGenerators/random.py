@@ -1,6 +1,6 @@
 """
 Program to generate an instance of SPA-ST - Random
-Student Project Allocation with Student and Lecturer preferences over projects
+Student Project Allocation with Student preferences over projects allowing ties
 """
 
 import random
@@ -17,10 +17,6 @@ class SPASTIG_Random(AbstractInstanceGenerator):
             for i in range(length):
                 p = random.choice(project_list)
                 project_list.remove(p) # avoid picking same project twice
-                # if i == 0 or random.uniform(0, 1) > self.student_tie_density:
-                #     self._sp[student].append([p])
-                # else:
-                #     self._sp[student][-1].append(p)
                 if i == 0: self._sp[student].append([p])
                 else:
                     self._assign_using_density(self._sp[student], p, self.student_tie_density)
@@ -56,7 +52,7 @@ class SPASTIG_Random(AbstractInstanceGenerator):
             pref_with_ties = [[pref[0]]]
 
             for student in pref[1:]:
-                self._assign_using_density(pref_with_ties, student, self.lecturer_tie_density)
+                pref_with_ties = self._assign_using_density(pref_with_ties, student, self.lecturer_tie_density)
             self._lp[lecturer][2] = pref_with_ties
 
             if self._force_lecturer_capacity:
