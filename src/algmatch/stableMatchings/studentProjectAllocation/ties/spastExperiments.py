@@ -53,7 +53,7 @@ def run_experiment(
     with open(f"{EXPERIMENTS_FOLDER}/results_{foldername}.txt", "w") as f:
         print(f"""
 Folder name: {foldername}
-Average time taken: {time_results.mean()}s
+Average time taken (seconds): {time_results.mean()}
 Params:
     generation_method: {generation_method}
     num_students: {num_students}
