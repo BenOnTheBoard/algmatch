@@ -28,9 +28,20 @@ class AbstractInstanceGenerator(ABC):
 
 
     def _reset_instance(self):
-        self._sp = {f's{i}': [] for i in range(1, self._num_students + 1)} # student -> [project preferences]
-        self._plc = {f'p{i}': [1, '', []] for i in range(1, self._num_projects + 1)} # project -> [capacity, lecturer, student]
-        self._lp = {f'l{i}': [0, [], [], 0, 0] for i in range(1, self._num_lecturers + 1)} # lecturer -> [capacity, projects, students, max of all c_j, sum of all c_j]
+        # student -> [project preferences]
+        self._sp = {
+            f's{i}': [] for i in range(1, self._num_students + 1)
+        }
+
+        # project -> [capacity, lecturer, student]
+        self._plc = {
+            f'p{i}': [1, '', []] for i in range(1, self._num_projects + 1)
+        }
+
+        # lecturer -> [capacity, projects, students, max of all c_j, sum of all c_j]
+        self._lp = {
+            f'l{i}': [0, [], [], 0, 0] for i in range(1, self._num_lecturers + 1)
+        }
 
 
     def _assign_project_lecturer(self, project, lecturer):
