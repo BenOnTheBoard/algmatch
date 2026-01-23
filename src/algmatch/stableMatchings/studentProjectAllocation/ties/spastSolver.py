@@ -11,7 +11,7 @@ from gurobipy import GRB
 from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel import FileReaderIPModel as FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastInstanceGenerator import SPASTGen
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
 
 
 class GurobiSPAST:
@@ -413,12 +413,16 @@ class GurobiSPAST:
 
 
 if __name__ == "__main__":
-    s = SPASTGen(
-        5, 0, 3,
-        3, 1,
-        0.5, 0.5
+    s = SPASTIG_Random(
+        student_tie_density=0.5,
+        lecturer_tie_density=0.5,
+        num_students=5,
+        lower_bound=0,
+        upper_bound=3,
+        num_projects=3,
+        num_lecturers=1
     )
-    runs = 10_000
+    runs = 1_000
 
     results = {"right":0, "wrong":0}
 

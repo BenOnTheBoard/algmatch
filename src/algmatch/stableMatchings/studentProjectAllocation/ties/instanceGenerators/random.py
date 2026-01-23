@@ -1,12 +1,12 @@
 """
-Program to generate an instance of SPA-P - Random
+Program to generate an instance of SPA-ST - Random
 Student Project Allocation with Student and Lecturer preferences over projects
 """
 
 import random
 import math
 
-from algmatch.stableMatchings.studentProjectAllocation.SPA_P.instanceGenerators.abstract import AbstractInstanceGenerator
+from .abstract import AbstractInstanceGenerator
 
 
 class SPASTIG_Random(AbstractInstanceGenerator):
