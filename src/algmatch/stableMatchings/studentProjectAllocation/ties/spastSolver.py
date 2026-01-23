@@ -414,8 +414,6 @@ class GurobiSPAST:
 
 if __name__ == "__main__":
     s = SPASTIG_Random(
-        student_tie_density=0.5,
-        lecturer_tie_density=0.5,
         num_students=5,
         lower_bound=0,
         upper_bound=3,
