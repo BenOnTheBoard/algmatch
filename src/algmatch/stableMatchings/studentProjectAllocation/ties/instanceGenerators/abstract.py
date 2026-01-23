@@ -6,6 +6,7 @@ Student Project Allocation with Student preferences over projects allowing ties
 from abc import ABC, abstractmethod
 import math
 import random
+from pprint import pprint
 
 
 class AbstractInstanceGenerator(ABC):
@@ -99,6 +100,20 @@ class AbstractInstanceGenerator(ABC):
         else:
             pref_list[-1].append(value)
 
+        return pref_list
+
+    
+    def _add_ties_to_list(self, pref_list, density):
+        """
+        Given a preference list, group elements by the given density.
+        """
+        if len(pref_list) == 0: return pref_list
+
+        tied_list = [[pref_list[0]]]
+        for elt in pref_list[1:]:
+            tied_list = self._assign_using_density(tied_list, elt, density)
+
+        return tied_list
 
     def _generate_projects(self):
         """
@@ -138,6 +153,10 @@ class AbstractInstanceGenerator(ABC):
         self._generate_projects()
         self._generate_students()
         self._generate_lecturers()
+
+        # pprint(self._sp)
+        # pprint(self._plc)
+        # pprint(self._lp)
 
 
     def _tied_list_to_string(self, l: list[list[str]], delim: str = ' ') -> str:
@@ -180,4 +199,4 @@ class AbstractInstanceGenerator(ABC):
 
             # lecturer index, capacity, preferences
             for lecturer in self._lp:
-                f.write(f"{lecturer[1:]}{delim}{self._lp[lecturer][0]}{delim}{self._tied_list_to_string(self._lp[lecturer][2], delim)}\n")
+                f.write(f"{lecturer[1:]}{delim}{self._lp[lecturer][0]}{delim}{self._tied_list_to_string(self._lp[lecturer][1], delim)}\n")
