@@ -17,10 +17,13 @@ class SPASTIG_Random(AbstractInstanceGenerator):
             for i in range(length):
                 p = random.choice(project_list)
                 project_list.remove(p) # avoid picking same project twice
-                if i == 0 or random.uniform(0, 1) > self.student_tie_density:
-                    self._sp[student].append([p])
+                # if i == 0 or random.uniform(0, 1) > self.student_tie_density:
+                #     self._sp[student].append([p])
+                # else:
+                #     self._sp[student][-1].append(p)
+                if i == 0: self._sp[student].append([p])
                 else:
-                    self._sp[student][-1].append(p)
+                    self._assign_using_density(self._sp[student], p, self.student_tie_density)
                 self._plc[p][2].append(student)
 
 
@@ -53,10 +56,7 @@ class SPASTIG_Random(AbstractInstanceGenerator):
             pref_with_ties = [[pref[0]]]
 
             for student in pref[1:]:
-                if random.uniform(0, 1) <= self.lecturer_tie_density:
-                    pref_with_ties[-1].append(student)
-                else:
-                    pref_with_ties.append([student])
+                self._assign_using_density(pref_with_ties, student, self.lecturer_tie_density)
             self._lp[lecturer][2] = pref_with_ties
 
             if self._force_lecturer_capacity:

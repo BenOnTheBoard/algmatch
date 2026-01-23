@@ -20,7 +20,29 @@ class AbstractInstanceGenerator(ABC):
             lecturer_tie_density=0.5,
             force_project_capacity=0,
             force_lecturer_capacity=0
-        ) -> None:
+    ) -> None:
+        """
+        * the density of tie in the preference lists is a number between 0 and 1 (inclusive)
+            - if the tie density is 0 on both sides, then the program writes an instance of SPA-S
+            without ties
+            - if the tie density is 1 on both sides, then the program writes an instance of SPA-ST,
+            where each preference list is a single tie of length 1
+        
+        * the tie density given is the probability (decided at random) that a project (or student) will be tied
+        with its successor.
+
+        * a lower tie density value corresponds to fewer ties.
+
+        :param num_students: int, number of students
+        :param lower_bound: int, lower bound of the students' preference list length
+        :param upper_bound: int, upper bound of the students' preference list length
+        :param num_projects: int, number of projects
+        :param num_lecturers: int, number of lecturers
+        :param student_tie_density: float, [0, 1], the density of tie in the students preference list 
+        :param lecturer_tie_density: float, [0, 1], the density of tie in the lecturers preference list
+        :param force_project_capacity: int, value to force project capacity
+        :param force_lecturer_capacity: int, value to force lecturer capacity
+        """
         assert lower_bound <= upper_bound, "Lower bound must be less than or equal to upper bound."
         assert upper_bound <= num_projects, "Upper bound must be less than or equal to the number of projects."
 
@@ -65,6 +87,17 @@ class AbstractInstanceGenerator(ABC):
         self._lp[lecturer][4] += self._plc[project][0] # track sum of all c_j
         if self._plc[project][0] > self._lp[lecturer][3]: # track max of all c_j
             self._lp[lecturer][3] = self._plc[project][0]
+
+
+    def _assign_using_density(self, pref_list, value, density):
+        """
+        Assigns the given value to the given preference list,
+        according to the provided (tie) density.
+        """
+        if random.uniform(0, 1) > density:
+            pref_list.append([value])
+        else:
+            pref_list[-1].append(value)
 
 
     def _generate_projects(self):
