@@ -69,7 +69,7 @@ if __name__ == "__main__":
     n1 = 100
     run_experiment(
         SPASTIG_Random,
-        n1, 0, n1 // 2,
+        n1, 1, n1 // 2,
         n1 // 2, n1 // 5,
         "random",
         "random100",
