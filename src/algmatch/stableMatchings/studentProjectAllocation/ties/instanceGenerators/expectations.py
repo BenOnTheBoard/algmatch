@@ -5,10 +5,10 @@ Student Project Allocation with Student preferences over projects allowing ties
 
 import numpy as np
 
-from algmatch.stableMatchings.studentProjectAllocation.SPA_P.instanceGenerators.euclidean import SPAPIG_Euclidean
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.euclidean import SPASTIG_Euclidean
 
 
-class SPASTIG_ExpectationsEuclidean(SPAPIG_Euclidean):
+class SPASTIG_ExpectationsEuclidean(SPASTIG_Euclidean):
     def __init__(
             self,
             num_dimensions: int = 5,

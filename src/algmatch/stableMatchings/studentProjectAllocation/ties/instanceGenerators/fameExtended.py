@@ -1,14 +1,14 @@
 """
-Program to generate an instance of SPA-P - Fame Euclidean Extended
-Student Project Allocation with Student and Lecturer preferences over projects
+Program to generate an instance of SPA-ST - Fame Euclidean Extended
+Student Project Allocation with Student preferences over projects allowing ties
 """
 
 import numpy as np
 
-from algmatch.stableMatchings.studentProjectAllocation.SPA_P.instanceGenerators.euclidean import SPAPIG_Euclidean
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.euclidean import SPASTIG_Euclidean
 
 
-class SPASTIG_FameEuclideanExtended(SPAPIG_Euclidean):
+class SPASTIG_FameEuclideanExtended(SPASTIG_Euclidean):
     def __init__(
             self,
             num_dimensions: int = 5,
@@ -39,4 +39,4 @@ class SPASTIG_FameEuclideanExtended(SPAPIG_Euclidean):
         super().sample_all_points()
 
         self._project_fame_student = np.random.uniform(0, self._max_fame_student, self._num_projects)
-        self._project_fame_lecturer = np.random.uniform(0, self._max_fame_lecturer, self._num_projects)
+        self._project_fame_lecturer = np.random.uniform(0, self._max_fame_lecturer, self._num_students)

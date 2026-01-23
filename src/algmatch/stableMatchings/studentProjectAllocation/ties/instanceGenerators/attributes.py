@@ -1,14 +1,14 @@
 """
-Program to generate an instance of SPA-P - Attributes
-Student Project Allocation with Student and Lecturer preferences over projects
+Program to generate an instance of SPA-ST - Attributes
+Student Project Allocation with Student preferences over projects allowing ties
 """
 
 import numpy as np
 
-from algmatch.stableMatchings.studentProjectAllocation.SPA_P.instanceGenerators.euclidean import SPAPIG_Euclidean
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.euclidean import SPASTIG_Euclidean
 
 
-class SPASTIG_Attributes(SPAPIG_Euclidean):
+class SPASTIG_Attributes(SPASTIG_Euclidean):
     def __init__(
             self,
             num_dimensions: int = 5,

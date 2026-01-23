@@ -30,7 +30,15 @@ class SPASTIG_Euclidean(AbstractInstanceGenerator):
         return np.linalg.norm(points - point, axis=1)
 
 
-    def _get_ordered_list(self, points_list, other_list, idx, prefix, length=None, reverse=False):
+    def _get_ordered_list(
+            self,
+            points_list,
+            other_list,
+            idx,
+            prefix,
+            length=None,
+            reverse=False
+    ):
         return list(map(
             lambda x: f'{prefix}{x+1}',
             np.argsort(
@@ -76,14 +84,14 @@ class SPASTIG_Euclidean(AbstractInstanceGenerator):
 
         # decide ordered preference and capacity
         for i, lecturer in enumerate(self._lp):
-            ordered_project_list = self._get_ordered_list(
+            ordered_student_list = self._get_ordered_list(
                 self._lecturer_points,
                 self._student_points,
                 i,
                 's'
             )
-            self._lp[lecturer][1] = self._add_ties_to_list(
-                [p for p in ordered_project_list if p in self._lp[lecturer][2]],
+            self._lp[lecturer][2] = self._add_ties_to_list(
+                [s for s in ordered_student_list if s in self._lp[lecturer][2]],
                 self.lecturer_tie_density
             )
 
