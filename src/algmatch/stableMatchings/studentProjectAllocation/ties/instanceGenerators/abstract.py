@@ -9,7 +9,18 @@ import random
 
 
 class AbstractInstanceGenerator(ABC):
-    def __init__(self, num_students, lower_bound, upper_bound, num_projects, num_lecturers, force_project_capacity=0, force_lecturer_capacity=0) -> None:
+    def __init__(
+            self,
+            num_students,
+            lower_bound,
+            upper_bound,
+            num_projects,
+            num_lecturers,
+            student_tie_density=0.5,
+            lecturer_tie_density=0.5,
+            force_project_capacity=0,
+            force_lecturer_capacity=0
+        ) -> None:
         assert lower_bound <= upper_bound, "Lower bound must be less than or equal to upper bound."
         assert upper_bound <= num_projects, "Upper bound must be less than or equal to the number of projects."
 
@@ -23,6 +34,9 @@ class AbstractInstanceGenerator(ABC):
 
         self._li: int = lower_bound # lower bound of student preference list
         self._lj: int = upper_bound # upper bound of student preference list
+
+        self.student_tie_density = student_tie_density
+        self.lecturer_tie_density = lecturer_tie_density
 
         self._reset_instance()
 
