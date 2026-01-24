@@ -4,8 +4,8 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastExperiments imp
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_ExpectationsEuclidean
 
 for n1 in range(100, 1001, 100):
-    for sd in np.arange(0, 0.1, 0.1):
-        for ld in np.arange(0, 0.1, 0.1):
+    for sd in np.arange(0, 1, 0.1):
+        for ld in np.arange(0, 1, 0.1):
             sd, ld = round(sd, 2), round(ld, 2)
             run_experiment(
                 SPASTIG_ExpectationsEuclidean,
