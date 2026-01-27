@@ -88,8 +88,8 @@ class SPASTAbstract:
         return min(existing_students, key=rank_comparator)
 
     def _blocking_pair_bi(self, _, project, lecturer):
-        cj = self.projects[project]["capacity"]
-        dk = self.original_lecturers[lecturer]["capacity"]
+        cj = self.projects[project]["upper_quota"]
+        dk = self.original_lecturers[lecturer]["upper_quota"]
 
         project_occupancy = len(self.M[project]["assigned"])
         lecturer_occupancy = len(self.M[lecturer]["assigned"])
@@ -99,8 +99,8 @@ class SPASTAbstract:
         return False
 
     def _blocking_pair_bii(self, student, project, lecturer):
-        cj = self.projects[project]["capacity"]
-        dk = self.original_lecturers[lecturer]["capacity"]
+        cj = self.projects[project]["upper_quota"]
+        dk = self.original_lecturers[lecturer]["upper_quota"]
 
         project_occupancy = len(self.M[project]["assigned"])
         lecturer_occupancy = len(self.M[lecturer]["assigned"])
@@ -119,7 +119,7 @@ class SPASTAbstract:
         return False
 
     def _blocking_pair_biii(self, student, project, _):
-        cj = self.projects[project]["capacity"]
+        cj = self.projects[project]["upper_quota"]
         project_occupancy = len(self.M[project]["assigned"])
 
         if project_occupancy == cj:
@@ -129,6 +129,41 @@ class SPASTAbstract:
             worst_student_rank = lkj_rankings[worst_student]
             if student_rank <= worst_student_rank:
                 return True
+        return False
+    
+    def _blockingpair_2bii(self, student, project, lecturer):
+        cj = self.projects[project]["upper_quota"]
+        dk = self.original_lecturers[lecturer]["upper_quota"]
+
+        project_occupancy = len(self.M[project]["assigned"])
+        lecturer_occupancy = len(self.M[lecturer]["assigned"])
+
+        if project_occupancy < cj and lecturer_occupancy == dk:
+            Mlk_students = self.M[lecturer]["assigned"]
+            lk_rankings = self.original_lecturers[lecturer]["rank"]
+
+            if student in Mlk_students:
+                return True
+
+            student_rank = lk_rankings[student]
+            for worst_student in Mlk_students:
+                worst_student_rank = lk_rankings[worst_student]
+                if student_rank < worst_student_rank:
+                    return True
+
+        return False
+
+    def _blockingpair_2biii(self, student, project, lecturer):
+        cj = self.projects[project]["upper_quota"]
+        project_occupancy = len(self.M[project]["assigned"])
+
+        if project_occupancy == cj:
+            lkj_rankings = self.lecturers[lecturer]["rank"]
+            student_rank = lkj_rankings[student]
+            for worst_student in self.M[project]["assigned"]:
+                worst_student_rank = lkj_rankings[worst_student]
+                if student_rank < worst_student_rank:
+                    return True
         return False
 
     def _check_super_stability(self) -> bool:
@@ -157,9 +192,44 @@ class SPASTAbstract:
         return True
 
     def _check_strong_stability(self) -> bool:
-        raise NotImplementedError(
-            "Strong stability algorithms have not yet been published for SPAST"
-        )
+        for student, s_prefs in self.original_students.items():
+            preferred_projects = s_prefs["list"]
+            indifferent_projects = []
+            matched_project = self.M[student]["assigned"]
+            
+            if matched_project is not None:
+                rank_matched_project = s_prefs["rank"][matched_project]
+                preferred_projects = [
+                    p for tie in s_prefs["list"][:rank_matched_project] for p in tie
+                ]
+                indifferent_projects = [
+                    p for p in s_prefs["list"][rank_matched_project]
+                ]
+                indifferent_projects.remove(matched_project)
+
+            for p_tie in preferred_projects:
+                for project in p_tie:
+                    lecturer = self.projects[project]["lecturer"]
+                    for condition in (
+                        self._blocking_pair_bi,
+                        self._blocking_pair_bii,
+                        self._blocking_pair_biii,
+                    ):
+                        if condition(student, project, lecturer):
+                            return False
+                        
+            for p_tie in indifferent_projects:
+                for project in p_tie:
+                    lecturer = self.projects[project]["lecturer"]
+                    for condition in (
+                        self._blocking_pair_bi,
+                        self._blockingpair_2bii,
+                        self._blockingpair_2biii
+                    ):
+                        if condition(student, project, lecturer):
+                            return False
+
+        return True
 
     def _get_prefs(self, participant) -> dict:
         if participant in self.students:
