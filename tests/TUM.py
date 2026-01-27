@@ -2,11 +2,11 @@ from itertools import combinations
 import numpy as np
 from tqdm import tqdm
 
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastSolver import (
+from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import (
     GurobiSPAST,
 )
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastInstanceGenerator import (
-    SPASTGen,
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.random import (
+    SPASTIG_Random,
 )
 
 
@@ -24,7 +24,7 @@ def is_TUM(A):
 
 def test_TUM(runs):
     for _ in tqdm(range(runs)):
-        generator = SPASTGen(5, 1, 2, 3, 1, 0.5, 0.5)
+        generator = SPASTIG_Random(5, 1, 2, 3, 1, 0.5, 0.5)
         generator.generate_instance()
         generator.write_instance_to_file("instance.txt")
 
