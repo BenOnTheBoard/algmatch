@@ -54,8 +54,38 @@ class EntityPreferenceInstance:
     def __len__(self):
         return len(self.values) if self.isTie else 1
 
+    def __or__(self, other):
+        if isinstance(other, set):
+            return set(list(self)) | other
+        else:
+            raise NotImplementedError
+
+    def __ror__(self, other):
+        return self.__or__(other)
+
+    def __ior__(self, other):
+        return self.__or__(other)
+
+    def __and__(self, other):
+        if isinstance(other, set):
+            return set(list(self)) & other
+        else:
+            raise NotImplementedError
+
+    def __rand__(self, other):
+        return self.__and__(other)
+
+    def __iand__(self, other):
+        return self.__and__(other)
+
     def _remove_from_tied(self, value):
         if self.isTie: 
             self.values = tuple(v for v in self.values if v != value)
         else:
             raise ValueError("Cannot remove from non-tied preference")
+
+    def discard(self, elt):
+        if elt in self:
+            return EntityPreferenceInstance(tuple(EntityPreferenceInstance(x) for x in self.values if x != elt))
+
+        return self

@@ -4,6 +4,7 @@ Class to read in a dictionary of preferences for the SPAST stable matching algor
 
 from re import findall
 
+from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
 from algmatch.abstractClasses.abstractReader import AbstractReader
 from algmatch.errors.ReaderErrors import (
     CapacityError,
@@ -49,6 +50,7 @@ class FileReader(AbstractReader):
                     cur_set.clear()
         if in_tie:
             raise UnclosedTieError(side, self.cur_line)
+        preferences = [EPI(tuple(pref)) for pref in preferences]
         return preferences
 
     def _read_data(self) -> None:
@@ -71,7 +73,7 @@ class FileReader(AbstractReader):
             raise ParticipantQuantityError()
 
         # build student dictionary
-        for elt in file[1 : self.no_residents + 1]:
+        for elt in file[1 : self.no_students + 1]:
             self.cur_line += 1
             entry = self.regex_split(elt)
 
@@ -105,7 +107,7 @@ class FileReader(AbstractReader):
                 raise OffererError("project", "lecturer", self.cur_line, line=True)
             offerer = f"l{entry[2]}"
 
-            self.projects[project] = {"capacity": capacity, "lecturer": offerer}
+            self.projects[project] = {"upper_quota": capacity, "lecturer": offerer}
 
         # build lecturers dictionary
         lecturers_end = projects_end + self.no_lecturers
@@ -116,7 +118,7 @@ class FileReader(AbstractReader):
             if not entry or not entry[0].isdigit():
                 raise IDMisformatError("lecturer", self.cur_line, line=True)
             lecturer = f"l{entry[0]}"
-            if lecturer in self.lecturer:
+            if lecturer in self.lecturers:
                 raise RepeatIDError("lecturer", self.cur_line, line=True)
 
             if not entry[1].isdigit():
@@ -125,7 +127,7 @@ class FileReader(AbstractReader):
 
             preferences = self._scan_preference_tokens(entry[2:], "lecturer", "s")
             self.lecturers[lecturer] = {
-                "capacity": capacity,
+                "upper_quota": capacity,
                 "projects": set(),
                 "list": preferences,
                 "rank": {},
