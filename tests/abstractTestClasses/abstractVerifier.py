@@ -45,9 +45,9 @@ class AbstractVerifier:
             else:
                 return False
 
-        if m_z != bruteforcer.stable_matching_list[-1]:
+        if m_z not in bruteforcer.stable_matching_list:
             return False
-        if m_0 != bruteforcer.stable_matching_list[0]:
+        if m_0 not in bruteforcer.stable_matching_list:
             return False
         return True
 

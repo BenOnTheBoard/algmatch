@@ -69,4 +69,11 @@ class HRTSuperResidentOptimal(HRTAbstract):
             if occupancy < capacity and self.been_full[h]:
                 return False
 
+        for r in self.residents:
+            if not self.M[r]["assigned"]:
+                self.M[r]["assigned"] = None
+            else:
+                # unpack single element
+                self.M[r]["assigned"] = next(iter(self.M[r]["assigned"]))
+
         return True

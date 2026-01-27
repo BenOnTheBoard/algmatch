@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from tests.SMTests.SM.smMultiVerifier import SMMultiVerifier as SM_MV
 from tests.HRTests.HR.hrMultiVerifier import HRMultiVerifier as HR_MV
-from tests.SPATests.spasMultiVerifier import SPASMultiVerifier as SPAS_MV
+from tests.SPASTests.spasMultiVerifier import SPASMultiVerifier as SPAS_MV
 
 from tests.SMTests.SMTSuper.smtSuperMultiVerifier import SMTSuperMultiVerifier as SMT_MV
 

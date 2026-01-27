@@ -69,14 +69,7 @@ class HRTAbstract:
     def _check_super_stability(self) -> bool:
         # stability must be checked with regards to the original lists prior to deletions
         for resident, r_prefs in self.original_residents.items():
-            # catch multiple assignments
-            assignment_num = len(self.M[resident]["assigned"])
-            if assignment_num > 1:
-                return False
-            elif assignment_num == 1:
-                [matched_hospital] = self.M[resident]["assigned"]
-            else:
-                matched_hospital = None
+            matched_hospital = self.M[resident]["assigned"]
 
             preferred_hospitals = r_prefs["list"]
             if matched_hospital is not None:
@@ -104,23 +97,64 @@ class HRTAbstract:
         return True
 
     def _check_strong_stability(self) -> bool:
-        raise NotImplementedError("Strong stability checking isn't implemented")
+        # stability must be checked with regards to the original lists prior to deletions
+        for resident, r_prefs in self.original_residents.items():
+            matched_hospital = self.M[resident]["assigned"]
+
+            if matched_hospital is not None:
+                rank_worst_matched_hospital = r_prefs["rank"][matched_hospital]
+                preferred_hospitals = r_prefs["list"][:rank_worst_matched_hospital]
+                indifferent_hospitals = r_prefs["list"][rank_worst_matched_hospital]
+            else:
+                preferred_hospitals = r_prefs["list"]
+                indifferent_hospitals = []
+
+            for h_tie in preferred_hospitals:
+                for hospital in h_tie:
+                    if (
+                        len(self.M[hospital]["assigned"])
+                        < self.hospitals[hospital]["capacity"]
+                    ):
+                        return False
+
+                    worst_resident = self._get_worst_existing_resident(hospital)
+                    h_prefs = self.original_hospitals[hospital]
+                    rank_worst = h_prefs["rank"][worst_resident]
+                    rank_resident = h_prefs["rank"][resident]
+                    if rank_resident <= rank_worst:
+                        return False
+
+            for hospital in indifferent_hospitals:
+                if hospital == matched_hospital:
+                    continue
+                if (
+                    len(self.M[hospital]["assigned"])
+                    < self.hospitals[hospital]["capacity"]
+                ):
+                    return False
+
+                worst_resident = self._get_worst_existing_resident(hospital)
+                h_prefs = self.original_hospitals[hospital]
+                rank_worst = h_prefs["rank"][worst_resident]
+                rank_resident = h_prefs["rank"][resident]
+                if rank_resident < rank_worst:
+                    return False
+
+        return True
+
+    def _get_prefs(self, participant) -> list:
+        if participant in self.residents:
+            return self.residents[participant]
+        elif participant in self.hospitals:
+            return self.hospitals[participant]
+        else:
+            raise ValueError(f"{participant} is not a resident or a hospital")
 
     def _get_pref_list(self, participant) -> list:
-        if participant in self.residents:
-            return self.residents[participant]["list"]
-        elif participant in self.hospitals:
-            return self.hospitals[participant]["list"]
-        else:
-            raise ValueError(f"{participant} is not a resident or a hospital")
+        return self._get_prefs(participant)["list"]
 
-    def _get_pref_ranks(self, participant) -> list:
-        if participant in self.residents:
-            return self.residents[participant]["rank"]
-        elif participant in self.hospitals:
-            return self.hospitals[participant]["rank"]
-        else:
-            raise ValueError(f"{participant} is not a resident or a hospital")
+    def _get_pref_ranks(self, participant) -> dict:
+        return self._get_prefs(participant)["rank"]
 
     def _get_pref_length(self, person) -> int:
         pref_list = self._get_pref_list(person)
@@ -186,23 +220,27 @@ class HRTAbstract:
                 self._break_assignment(target, reject)
                 self._delete_pair(target, reject)
 
+    def _neighbourhood(self, people):
+        if not people:
+            return set()
+        return set.union(*[self.M[person]["assigned"] for person in people])
+
     def _while_loop(self) -> bool:
         raise NotImplementedError("Method _while_loop must be implemented in subclass")
 
     def save_resident_sided(self) -> None:
         for resident in self.residents:
-            hospital_set = self.M[resident]["assigned"]
-            if hospital_set != set():
-                # If resident is multiply assigned then there's no sup.s.m,
-                # in which case we won't call this function, so we can use this unpacking
-                [hospital] = hospital_set
+            hospital = self.M[resident]["assigned"]
+            if hospital is None:
+                self.stable_matching["resident_sided"][resident] = ""
+            else:
                 self.stable_matching["resident_sided"][resident] = hospital
 
     def save_hospital_sided(self) -> None:
-        for hospitals in self.hospitals:
-            resident_set = self.M[hospitals]["assigned"]
+        for hospital in self.hospitals:
+            resident_set = self.M[hospital]["assigned"]
             if resident_set != set():
-                self.stable_matching["hospital_sided"][hospitals] = resident_set
+                self.stable_matching["hospital_sided"][hospital] = resident_set
 
     def run(self) -> None:
         if self._while_loop():
@@ -215,5 +253,5 @@ class HRTAbstract:
                 self.is_stable = self._check_strong_stability()
 
             if self.is_stable:
-                return f"super-stable matching: {self.stable_matching}"
-        return "no super-stable matching"
+                return f"stable matching: {self.stable_matching}"
+        return "no stable matching"

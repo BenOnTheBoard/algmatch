@@ -9,6 +9,12 @@ from algmatch.stableMatchings.stableMarriageProblem.ties.smtSuperManOriented imp
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtSuperWomanOriented import (
     SMTSuperWomanOriented,
 )
+from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongManOptimal import (
+    SMTStrongManOptimal,
+)
+from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongWomanOptimal import (
+    SMTStrongWomanOptimal,
+)
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtAbstract import SMTAbstract
 
 
@@ -25,8 +31,8 @@ class StableMarriageProblemWithTies:
 
         :param filename: str, optional, default=None, the path to the file to read in the preferences from.
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
-        :param optimised_side: str, optional, default="men", whether the algorithm is "men" (default) or "woman" sided.
-        :param stabilityType: str, optional, default=None which kind of matching to look for. Must be either "strong" or "super".
+        :param optimised_side: str, optional, default="men", whether the algorithm is "men" (default) or "women" sided.
+        :param stability_type: str, optional, default=None which kind of matching to look for. Must be either "strong" or "super".
         """
         if filename is not None:
             filename = os.path.join(os.getcwd(), filename)
@@ -65,7 +71,14 @@ class StableMarriageProblemWithTies:
                     filename=self.filename, dictionary=self.dictionary
                 )
         elif self.stability_type == "strong":
-            raise NotImplementedError("Strong algorithms are not yet available.")
+            if self.optimised_side == "men":
+                self.sm_alg = SMTStrongManOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
+            else:
+                self.sm_alg = SMTStrongWomanOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
         else:
             raise ValueError('stability_type must be either "strong" or "super".')
 

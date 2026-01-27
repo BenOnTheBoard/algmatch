@@ -1,9 +1,15 @@
 """
-Class to provide interface for the Hospital/Residents Problem With Ties algorithm.
+Class to provide interface for the Hospital/Residents Problem With Ties algorithms.
 """
 
 import os
 
+from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongResidentOptimal import (
+    HRTStrongResidentOptimal,
+)
+from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongHospitalOptimal import (
+    HRTStrongHospitalOptimal,
+)
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtSuperResidentOptimal import (
     HRTSuperResidentOptimal,
 )
@@ -28,7 +34,8 @@ class HospitalResidentsProblemWithTies:
 
         :param filename: str, optional, default=None, the path to the file to read in the preferences from.
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
-        :param optimised_side: str, optional, default="resident", whether the algorithm is "resident" (default) or "hospital" sided.
+        :param optimised_side: str, optional, default="residents", whether the algorithm is "residents" (default) or "hospitals" sided.
+        :param stability_type: str, default=None, specifies the stability condition to be solved for.
         """
         if filename is not None:
             filename = os.path.join(os.getcwd(), filename)
@@ -68,7 +75,14 @@ class HospitalResidentsProblemWithTies:
                     filename=self.filename, dictionary=self.dictionary
                 )
         elif self.stability_type == "strong":
-            raise NotImplementedError("Strong algorithms are not yet available.")
+            if self.optimised_side == "residents":
+                self.hr_alg = HRTStrongResidentOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
+            else:
+                self.hr_alg = HRTStrongHospitalOptimal(
+                    filename=self.filename, dictionary=self.dictionary
+                )
         else:
             raise ValueError('stability_type must be either "strong" or "super".')
 

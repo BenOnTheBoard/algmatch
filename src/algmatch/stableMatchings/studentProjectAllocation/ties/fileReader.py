@@ -1,138 +1,132 @@
 """
-Class to read in a file of preferences for the Student Project Allocation with Ties stable matching algorithm.
+Class to read in a dictionary of preferences for the SPAST stable matching algorithms.
 """
 
-from algmatch.abstractClasses.abstractReader import AbstractReader
-from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance
+from re import findall
 
-from algmatch.errors.ReaderErrors import ParticipantQuantityError, CapacityError, IDMisformatError, RepeatIDError, PrefListMisformatError, OffererError
+from algmatch.abstractClasses.abstractReader import AbstractReader
+from algmatch.errors.ReaderErrors import (
+    CapacityError,
+    IDMisformatError,
+    NestedTiesError,
+    OffererError,
+    ParticipantQuantityError,
+    RepeatIDError,
+    UnclosedTieError,
+    UnopenedTieError,
+)
+
 
 class FileReader(AbstractReader):
     def __init__(self, filename: str) -> None:
         super().__init__(filename)
         self._read_data()
 
-    def _read_preferences_ranks(self, entry: list[str], letter: str):
-        """
-        Returns preferences and ranks from an entry in the file.
-        """
+    # Read as: find cases of more than one digit or either '(' or ')'
+    def regex_split(self, line):
+        return findall(r"\d+|[\(\)]", line)
+
+    def _scan_preference_tokens(self, token_list, side, pref_char):
         preferences = []
-        ranks = {}
+        in_tie = False
+        cur_set = set()
 
-        open_bracket = False
-        for k in entry:
-            if "(" in k and open_bracket:
-                raise ValueError("Cannot have tie within a tie")
-
-            elif "(" in k:
-                open_bracket = True
-                preferences.append([])
-                k = k[1:]
-                preferences[-1].append(f"{letter}{k}")
-
-            elif ")" in k and not open_bracket:
-                raise ValueError("Cannot have closing bracket without an opening bracket")
-
-            elif ")" in k:
-                open_bracket = False
-                k = k[:-1]
-                preferences[-1].append(f"{letter}{k}")
-
+        for token in token_list:
+            if token == "(":
+                if in_tie:
+                    raise NestedTiesError(side, self.cur_line)
+                in_tie = True
+            elif token == ")":
+                if not in_tie:
+                    raise UnopenedTieError(side, self.cur_line)
+                in_tie = False
+                preferences.append(cur_set.copy())
+                cur_set.clear()
             else:
-                if not open_bracket:
-                    # not inside tie
-                    preferences.append(f"{letter}{k}")
-                else:
-                    # inside tie
-                    preferences[-1].append(f"{letter}{k}")
-
-        preferences = [tuple(p) if isinstance(p, list) else p for p in preferences]
-        preferences = [EntityPreferenceInstance(p) for p in preferences]
-
-        i = 0
-        for p in preferences:
-            for elt in p:
-                ranks[elt] = i
-            i += 1
-
-        return preferences, ranks
+                cur_set.add(pref_char + token)
+                if not in_tie:
+                    preferences.append(cur_set.copy())
+                    cur_set.clear()
+        if in_tie:
+            raise UnclosedTieError(side, self.cur_line)
+        return preferences
 
     def _read_data(self) -> None:
         self.no_students = 0
         self.no_projects = 0
-        self.no_lecturers = 0  # assume number of lecturers <= number of projects
-        self.students = {}                
+        self.no_lecturers = 0
+        self.students = {}
         self.projects = {}
-        self.lecturers = {}
-        cur_line = 1
-        
-        with open(self.data, 'r') as file:
+        self.lecturers = {}  # assume number of lecturers <= number of projects
+        self.cur_line = 1
+
+        with open(self.data, "r") as file:
             file = file.read().splitlines()
 
-        try: 
-            self.no_students, self.no_projects, self.no_lecturers = map(int, file[0].split())
+        try:
+            self.no_students, self.no_projects, self.no_lecturers = map(
+                int, file[0].split()
+            )
         except ValueError:
             raise ParticipantQuantityError()
 
-        # build students dictionary
-        for elt in file[1:self.no_students+1]:
-            cur_line += 1
-            entry = elt.split()
+        # build student dictionary
+        for elt in file[1 : self.no_residents + 1]:
+            self.cur_line += 1
+            entry = self.regex_split(elt)
 
             if not entry or not entry[0].isdigit():
-                raise IDMisformatError("student", cur_line, line=True)
+                raise IDMisformatError("student", self.cur_line, line=True)
             student = f"s{entry[0]}"
             if student in self.students:
-                raise RepeatIDError("student", cur_line, line=True)
+                raise RepeatIDError("student", self.cur_line, line=True)
 
-            for i in entry[1:]:
-                if not all(j.isdigit() or j in ['(',')'] for j in i):
-                    raise PrefListMisformatError("student",cur_line,line=True)
-
-            preferences, rank = self._read_preferences_ranks(entry[1:], letter='p')
-            
-            self.students[student] = {"list": preferences, "rank": rank}
+            preferences = self._scan_preference_tokens(entry[1:], "student", "p")
+            self.students[student] = {"list": preferences, "rank": {}}
 
         # build projects dictionary
-        for elt in file[self.no_students+1:self.no_students+self.no_projects+1]:
-            cur_line += 1
+        projects_start = self.no_students + 1
+        projects_end = projects_start + self.no_projects
+        for elt in file[projects_start:projects_end]:
+            self.cur_line += 1
             entry = elt.split()
 
             if not entry or not entry[0].isdigit():
-                raise IDMisformatError("project", cur_line, line=True)
+                raise IDMisformatError("project", self.cur_line, line=True)
             project = f"p{entry[0]}"
             if project in self.projects:
-                raise RepeatIDError("project", cur_line, line=True)
-            
+                raise RepeatIDError("project", self.cur_line, line=True)
+
             if not entry[1].isdigit():
-                raise CapacityError("project",cur_line,line=True)
+                raise CapacityError("project", self.cur_line, line=True)
             capacity = int(entry[1])
 
             if not entry[2].isdigit():
-                raise OffererError("project","lecturer",cur_line,line=True)
-            offerer = f"l{int(entry[2])}"
+                raise OffererError("project", "lecturer", self.cur_line, line=True)
+            offerer = f"l{entry[2]}"
 
-            self.projects[project] = {"upper_quota": capacity, "lecturer": offerer}
+            self.projects[project] = {"capacity": capacity, "lecturer": offerer}
 
         # build lecturers dictionary
-        for elt in file[self.no_students+self.no_projects+1:self.no_students+self.no_projects+self.no_lecturers+1]:
-            cur_line += 1
-            entry = elt.split()
+        lecturers_end = projects_end + self.no_lecturers
+        for elt in file[projects_end:lecturers_end]:
+            self.cur_line += 1
+            entry = self.regex_split(elt)
 
             if not entry or not entry[0].isdigit():
-                raise IDMisformatError("lecturer", cur_line, line=True)
+                raise IDMisformatError("lecturer", self.cur_line, line=True)
             lecturer = f"l{entry[0]}"
-            if lecturer in self.lecturers:
-                raise RepeatIDError("lecturer", cur_line, line=True)
-            
+            if lecturer in self.lecturer:
+                raise RepeatIDError("lecturer", self.cur_line, line=True)
+
             if not entry[1].isdigit():
-                raise CapacityError("lecturer",cur_line,line=True)
+                raise CapacityError("lecturer", self.cur_line, line=True)
             capacity = int(entry[1])
 
-            for i in entry[2:]:
-                if not all(j.isdigit() or j in ['(',')'] for j in i):
-                    raise PrefListMisformatError("lecturer",cur_line,line=True)
-
-            preferences, rank = self._read_preferences_ranks(entry[2:], letter='s')
-                        
-            self.lecturers[lecturer] = {"upper_quota": capacity, "projects": set(), "list": preferences, "rank": rank, "lkj": {}}
+            preferences = self._scan_preference_tokens(entry[2:], "lecturer", "s")
+            self.lecturers[lecturer] = {
+                "capacity": capacity,
+                "projects": set(),
+                "list": preferences,
+                "rank": {},
+            }

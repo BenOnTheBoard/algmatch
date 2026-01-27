@@ -1,11 +1,16 @@
 """
-Class to read in a dictionary of preferences for the Student Project Allocation with Ties stable matching algorithm.
+Class to read in a dictionary of preferences for the SPAST stable matching algorithms.
 """
 
 from algmatch.abstractClasses.abstractReader import AbstractReader
-from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance
+from algmatch.errors.ReaderErrors import (
+    CapacityError,
+    IDMisformatError,
+    RepeatIDError,
+    PrefListMisformatError,
+    OffererError,
+)
 
-from algmatch.errors.ReaderErrors import ParticipantQuantityError, CapacityError, IDMisformatError, RepeatIDError, PrefListMisformatError, OffererError
 
 class DictionaryReader(AbstractReader):
     def __init__(self, dictionary: dict) -> None:
@@ -22,76 +27,81 @@ class DictionaryReader(AbstractReader):
                 case "students":
                     for k, v in value.items():
                         if type(k) is not int:
-                            raise IDMisformatError("student",k)
+                            raise IDMisformatError("student", k)
                         student = f"s{k}"
                         if student in self.students:
-                            raise RepeatIDError("student",k)
-                        
+                            raise RepeatIDError("student", k)
+
                         for i in v:
-                            if type(i) is not int and not all(type(j) is int for j in i):
-                                raise PrefListMisformatError("student",k,i)
+                            # if not int, must be a tie list
+                            if type(i) is not int and not all(
+                                type(j) is int for j in i
+                            ):
+                                raise PrefListMisformatError("student", k, i)
 
                         preferences = []
-                        rank = {}
                         for i, elt in enumerate(v):
                             if isinstance(elt, int):
-                                epi = EntityPreferenceInstance(f"p{elt}")
-                                rank[f"p{elt}"] = i
+                                tie = set()
+                                tie.add(f"p{elt}")
                             else:
-                                epi = EntityPreferenceInstance(tuple(f"p{j}" for j in elt))
-                                for j in elt:
-                                    rank[f"p{j}"] = i
+                                tie = {f"p{j}" for j in elt}
+                            preferences.append(tie)
 
-                            preferences.append(epi)
-
-                        self.students[student] = {"list": preferences, "rank": rank}
+                        self.students[student] = {"list": preferences, "rank": dict()}
 
                 case "projects":
                     for k, v in value.items():
                         if type(k) is not int:
-                            raise IDMisformatError("project",k)
+                            raise IDMisformatError("project", k)
                         project = f"p{k}"
                         if project in self.projects:
-                            raise RepeatIDError("project",k)
-                        
+                            raise RepeatIDError("project", k)
+
                         if type(v["capacity"]) is not int:
-                            raise CapacityError("project",k)
+                            raise CapacityError("project", k)
                         capacity = v["capacity"]
 
                         if type(v["lecturer"]) is not int:
-                            raise OffererError("project","lecturer",k)
-                        lecturer = f"l{v['lecturer']}"
+                            raise OffererError("project", "lecturer", k)
+                        offerer = f"l{v['lecturer']}"
 
-                        self.projects[project] = {"upper_quota": capacity, "lecturer": lecturer}
+                        self.projects[project] = {
+                            "capacity": capacity,
+                            "lecturer": offerer,
+                        }
 
                 case "lecturers":
                     for k, v in value.items():
                         if type(k) is not int:
-                            raise IDMisformatError("lecturer",k)
+                            raise IDMisformatError("lecturer", k)
                         lecturer = f"l{k}"
                         if lecturer in self.lecturers:
-                            raise RepeatIDError("lecturer",k)
-                        
+                            raise RepeatIDError("lecturer", k)
+
                         if type(v["capacity"]) is not int:
-                            raise CapacityError("project",k)
+                            raise CapacityError("lecturer", k)
                         capacity = v["capacity"]
 
                         for i in v["preferences"]:
-                            if type(i) is not int and not all(type(j) is int for j in i):
-                                raise PrefListMisformatError("lecturer",k,i)
+                            # if not int, must be a tie list
+                            if type(i) is not int and not all(
+                                type(j) is int for j in i
+                            ):
+                                raise PrefListMisformatError("lecturer", k, i)
 
                         preferences = []
-                        rank = {}
-
                         for i, elt in enumerate(v["preferences"]):
                             if isinstance(elt, int):
-                                epi = EntityPreferenceInstance(f"s{elt}")
-                                rank[f"s{elt}"] = i
+                                tie = set()
+                                tie.add(f"s{elt}")
                             else:
-                                epi = EntityPreferenceInstance(tuple(f"s{j}" for j in elt))
-                                for j in elt:
-                                    rank[f"s{j}"] = i
+                                tie = {f"s{j}" for j in elt}
+                            preferences.append(tie)
 
-                            preferences.append(epi)
-
-                        self.lecturers[lecturer] = {"upper_quota": capacity, "projects": set(), "list": preferences, "rank": rank, "lkj": {}}
+                        self.lecturers[lecturer] = {
+                            "capacity": capacity,
+                            "projects": set(),
+                            "list": preferences,
+                            "rank": dict(),
+                        }

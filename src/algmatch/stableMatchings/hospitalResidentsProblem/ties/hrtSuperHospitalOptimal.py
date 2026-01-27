@@ -95,4 +95,11 @@ class HRTSuperHospitalOptimal(HRTAbstract):
             if occupancy > capacity:
                 return False
 
+        for r in self.residents:
+            if not self.M[r]["assigned"]:
+                self.M[r]["assigned"] = None
+            else:
+                # unpack single element
+                self.M[r]["assigned"] = next(iter(self.M[r]["assigned"]))
+
         return True

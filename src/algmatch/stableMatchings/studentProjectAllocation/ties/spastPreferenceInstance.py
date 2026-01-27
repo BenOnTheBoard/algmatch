@@ -1,29 +1,26 @@
 """
-Store preference lists for student project allocation with ties algorithm.
+Store preference lists for the SPAST stable matching algorithm.
 """
 
+from copy import deepcopy
 from itertools import product
 
-from algmatch.abstractClasses.abstractPreferenceInstance import (
-    AbstractPreferenceInstance,
+from algmatch.abstractClasses.abstractPreferenceInstanceWithTies import (
+    AbstractPreferenceInstanceWithTies,
 )
 from algmatch.stableMatchings.studentProjectAllocation.ties.fileReader import FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.dictionaryReader import (
     DictionaryReader,
 )
-from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import (
-    EntityPreferenceInstance as EPI,
-)
-
-from algmatch.errors.InstanceSetupErrors import PrefRepError, PrefNotFoundError
 
 
-class SPASTPreferenceInstance(AbstractPreferenceInstance):
+class SPASTPreferenceInstance(AbstractPreferenceInstanceWithTies):
     def __init__(
         self, filename: str | None = None, dictionary: dict | None = None
     ) -> None:
         super().__init__(filename, dictionary)
-        self.setup_project_lists()
+        self._setup_project_lists()
+        self._general_setup_procedure()
 
     def _load_from_file(self, filename: str) -> None:
         reader = FileReader(filename)
@@ -37,85 +34,65 @@ class SPASTPreferenceInstance(AbstractPreferenceInstance):
         self.projects = reader.projects
         self.lecturers = reader.lecturers
 
-    def setup_project_lists(self) -> None:
+    def _setup_project_lists(self) -> None:
         for project in self.projects:
             lec = self.projects[project]["lecturer"]
             self.lecturers[lec]["projects"].add(project)
             lecturer_list = self.lecturers[lec]["list"]
 
-            project_list = []
-            for epi in lecturer_list:
-                if epi.isTie:
-                    project_list.append([])
-                    for stu in epi.values:
-                        for elt in self.students[stu.values]["list"]:
-                            if project in elt:
-                                project_list[-1].append(str(stu.values))
-                                #print(f"appended {stu.values} (tie)")
+            self.projects[project]["list"] = deepcopy(lecturer_list)
+            self.projects[project]["best_reject"] = None
 
-                else:
-                    for elt in self.students[epi.values]["list"]:
-                        if project in elt:
-                            project_list.append(str(epi.values))
-                            #print(f"appended {epi.values} (no tie)")
-
-            self.lecturers[lec]["lkj"][project] = [
-                EPI(tuple(p)) if isinstance(p, list) else EPI(p)
-                for p in project_list
-                if p != []
-            ]
-
-    # TODO: check these work
-    # unused currently
     def check_preference_lists(self) -> None:
-        for s, s_prefs in self.students.items():
-            if len(set(s_prefs["list"])) != len(s_prefs["list"]):
-                raise PrefRepError("student", s)
-
-            for p in s_prefs["list"]:
-                if p not in self.projects:
-                    raise PrefNotFoundError("student", s, p)
-
-        for L, L_prefs in self.lecturers.items():
-            if len(set(L_prefs["list"])) != len(L_prefs["list"]):
-                raise PrefRepError("lecturer", L)
-
-            for s in L_prefs["list"]:
-                if s not in self.students:
-                    raise PrefNotFoundError("lecturer", L, s)
+        self.check_preferences_with_ties_single_group(
+            self.students, "student", self.projects
+        )
+        self.check_preferences_with_ties_single_group(
+            self.lecturers, "lecturer", self.students
+        )
 
     def clean_unacceptable_pairs(self) -> None:
         for s, p in product(self.students, self.projects):
-            if s not in self.projects[p]["list"] or p not in self.students[s]["list"]:
-                try:
-                    self.students[s]["list"].remove(p)
-                except ValueError:
-                    pass
-                try:
-                    self.projects[p]["list"].remove(s)
-                except ValueError:
-                    pass
+            s_list = self.students[s]["list"]
+            p_list = self.projects[p]["list"]
+
+            s_found = any([s in tie for tie in p_list])
+            p_found = any([p in tie for tie in s_list])
+
+            if not (s_found and p_found):
+                for tie in s_list:
+                    tie.discard(p)
+                for tie in p_list:
+                    tie.discard(s)
+                # clean empty sets
+                # we've produced at most one per side in this loop
+                if set() in s_list:
+                    s_list.remove(set())
+                if set() in p_list:
+                    p_list.remove(set())
 
         for L in self.lecturers:
             proj_pref_set = set()
             for p in self.lecturers[L]["projects"]:
-                proj_pref_set.update(self.projects[p]["list"])
+                for tie in self.projects[p]["list"]:
+                    proj_pref_set.update(tie)
             new_l_prefs = []
-            for s in self.lecturers[L]["list"]:
-                if s in proj_pref_set:
-                    new_l_prefs.append(s)
+            for s_tie in self.lecturers[L]["list"]:
+                new_tie = s_tie & proj_pref_set
+                new_l_prefs.append(new_tie)
             self.lecturers[L]["list"] = new_l_prefs
 
     def set_up_rankings(self):
-        for s in self.students:
-            self.students[s]["rank"] = {
-                project: idx for idx, project in enumerate(self.students[s]["list"])
-            }
-        for p in self.projects:
-            self.projects[p]["rank"] = {
-                student: idx for idx, student in enumerate(self.projects[p]["list"])
-            }
-        for L in self.lecturers:
-            self.lecturers[L]["rank"] = {
-                student: idx for idx, student in enumerate(self.lecturers[L]["list"])
-            }
+        self.tied_lists_to_rank(self.students)
+        self.tied_lists_to_rank(self.projects)
+        self.tied_lists_to_rank(self.lecturers)
+
+        for l_prefs in self.lecturers.values():
+            l_prefs["times_ranked"] = {s: 0 for s_tie in l_prefs["list"] for s in s_tie}
+
+        for p, p_info in self.projects.items():
+            L = p_info["lecturer"]
+            counting = self.lecturers[L]["times_ranked"]
+            for s_tie in p_info["list"]:
+                for s in s_tie:
+                    counting[s] += 1

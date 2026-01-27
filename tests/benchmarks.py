@@ -8,7 +8,7 @@ from algmatch.stableMarriageProblem import StableMarriageProblem
 from tests.SMTests.utils.instanceGenerator import SMInstanceGenerator
 
 from algmatch.studentProjectAllocation import StudentProjectAllocation
-from tests.SPATests.utils.instanceGenerator import SPAInstanceGenerator
+from tests.SPASTests.utils.instanceGenerator import SPAInstanceGenerator
 
 
 def show_results(data):

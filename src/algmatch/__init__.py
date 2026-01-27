@@ -1,16 +1,27 @@
-from .hospitalResidentsProblem import HospitalResidentsProblem
-from .stableMarriageProblem import StableMarriageProblem
-from .studentProjectAllocation import StudentProjectAllocation
+# === Non-bipartite ===
+from .stableRoommatesProblem import StableRoommatesProblem
+from .stableRoommatesProblem import StableRoommatesProblem as SR
 
-from .hospitalResidentsProblem import HospitalResidentsProblem as HR
+# === Bipartite ===
+
+# --- No Ties ---
+from .stableMarriageProblem import StableMarriageProblem
 from .stableMarriageProblem import StableMarriageProblem as SM
+
+from .hospitalResidentsProblem import HospitalResidentsProblem
+from .hospitalResidentsProblem import HospitalResidentsProblem as HR
+
+from .studentProjectAllocation import StudentProjectAllocation
 from .studentProjectAllocation import StudentProjectAllocation as SPAS
 
-from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies
+# --- Ties ---
 from .stableMarriageProblemWithTies import StableMarriageProblemWithTies
-
-from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies as HRT
 from .stableMarriageProblemWithTies import StableMarriageProblemWithTies as SMT
+
+from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies
+from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies as HRT
+
+# === SPA-P ===
 
 from .studentProjectAllocationProjects import StudentProjectAllocationProjectsSingle
 from .studentProjectAllocationProjects import StudentProjectAllocationProjectsMultiple

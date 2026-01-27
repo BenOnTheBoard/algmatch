@@ -41,10 +41,6 @@ class SMAbstract:
         }
         self.is_stable = False
 
-    # =======================================================================
-    # Is M stable? Check for blocking pair
-    # self.blocking_pair is set to True if blocking pair exists
-    # =======================================================================
     def _check_stability(self):
         # stability must be checked with regards to the original lists prior to deletions
         for man, m_prefs in self.original_men.items():
@@ -52,9 +48,8 @@ class SMAbstract:
             if self.M[man]["assigned"] is not None:
                 matched_woman = self.M[man]["assigned"]
                 rank_matched_woman = m_prefs["rank"][matched_woman]
-                preferred_women = m_prefs["list"][
-                    :rank_matched_woman
-                ]  # every woman that m_i prefers to his matched partner
+                # every woman that m_i prefers to his matched partner
+                preferred_women = m_prefs["list"][:rank_matched_woman]
 
             for woman in preferred_women:
                 existing_fiance = self.M[woman]["assigned"]

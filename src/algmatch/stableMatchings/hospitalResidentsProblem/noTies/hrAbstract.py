@@ -38,23 +38,22 @@ class HRAbstract:
         self.M = {}  # provisional matching
         self.stable_matching = {
             "resident_sided": {resident: "" for resident in self.residents},
-            "hospital_sided": {hospital: [] for hospital in self.hospitals},
+            "hospital_sided": {hospital: set() for hospital in self.hospitals},
         }
         self.is_stable = False
 
     def _blocking_pair_condition(self, resident, hospital):
-        # blocking pairs exist w.r.t the original preference lists; we must use original_
-        h_data = self.original_hospitals[hospital]
+        h_info = self.original_hospitals[hospital]
         assignees = self.M[hospital]["assigned"]
 
-        cj = h_data["capacity"]
+        cj = h_info["capacity"]
         occupancy = len(assignees)
         if occupancy < cj:
             return True
 
-        resident_rank = h_data["rank"][resident]
+        resident_rank = h_info["rank"][resident]
         for existing_resident in assignees:
-            existing_rank = h_data["rank"][existing_resident]
+            existing_rank = h_info["rank"][existing_resident]
             if resident_rank < existing_rank:
                 return True
 
@@ -85,7 +84,7 @@ class HRAbstract:
             hospital = self.M[resident]["assigned"]
             if hospital is not None:
                 self.stable_matching["resident_sided"][resident] = hospital
-                self.stable_matching["hospital_sided"][hospital].append(resident)
+                self.stable_matching["hospital_sided"][hospital].add(resident)
 
         self.is_stable = self._check_stability()
 

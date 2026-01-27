@@ -2,7 +2,7 @@ from algmatch.stableMarriageProblemWithTies import StableMarriageProblemWithTies
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
 from tests.SMTests.utils.ties.smtInstanceGenerator import SMTInstanceGenerator
-from tests.SMTests.utils.ties.smtMinmaxer import SMTMinmaxer
+from tests.SMTests.utils.ties.smtEnumerator import SMTEnumerator
 
 
 class SMTSuperVerifier(AbstractVerifier):
@@ -28,6 +28,6 @@ class SMTSuperVerifier(AbstractVerifier):
             ("men", "women"),
             SMTInstanceGenerator,
             generator_args,
-            SMTMinmaxer,
+            SMTEnumerator,
             "super",
         )
