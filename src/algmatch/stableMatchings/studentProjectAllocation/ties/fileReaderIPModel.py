@@ -30,7 +30,7 @@ class FileReaderIPModel(AbstractReader):
             project_data = self._file_reader.students[student]
             self.students[student] = [
                 project_data["list"],
-                {EPI(p): 0 for project in project_data["list"] for p in project}
+                {EPI(p): 0 for p in self._file_reader.projects}
             ]
 
         for project in self._file_reader.projects:
