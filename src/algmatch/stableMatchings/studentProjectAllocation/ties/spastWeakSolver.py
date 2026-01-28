@@ -162,9 +162,13 @@ if __name__ == "__main__":
         num_projects=3,
         num_lecturers=1
     )
-    runs = 1_000
+    runs = 100
 
-    results = {"right":0, "wrong":0}
+    results = {
+        "right": 0,
+        "wrong": 0,
+        "maximal": 0
+    }
 
     for _ in tqdm(range(runs)):
         s.generate_instance()
@@ -177,16 +181,20 @@ if __name__ == "__main__":
         B = Brute(filename="instance.txt", stability_type="weak")
         B.choose()
         answer_list = B.get_ssm_list()
+        answer_list.sort(key=lambda x: sum(1 if v else 0 for v in x.values()), reverse=True)
 
-        if not answer_list and G_answer is None:
-            results["right"] += 1
+        if G_answer is None:
+            results["wrong"] += 1
         elif G_answer in answer_list:
             results["right"] += 1
+            if G_answer == answer_list[0]:
+                results["maximal"] += 1
         else:
             results["wrong"] += 1
 
     print(f"""
           Model Test Results:
             Right: {results["right"]}, {100*results["right"]/runs}%
+                Maximal matching found: {results["maximal"]}, {100*results["maximal"]/results["right"]:.2f}%
             Wrong: {results["wrong"]}, {100*results["wrong"]/runs}%
     """)
