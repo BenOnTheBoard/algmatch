@@ -157,7 +157,7 @@ class SPASTWeakSolver:
 if __name__ == "__main__":
     s = SPASTIG_Random(
         num_students=5,
-        lower_bound=0,
+        lower_bound=3,
         upper_bound=3,
         num_projects=3,
         num_lecturers=1

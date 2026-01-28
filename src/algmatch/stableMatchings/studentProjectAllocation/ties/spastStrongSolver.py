@@ -77,12 +77,15 @@ class SPASTStrongSolver:
 
         :param strict: if True, only return entities that strictly outrank entity
         """
+        if len(preference_list) == 0: return []
+
         idx = 0
         p = preference_list[idx]
         outranked_projects = []
         while entity not in p:
             outranked_projects += p
             idx += 1
+            if idx == len(preference_list): return outranked_projects
             p = preference_list[idx]
         
         outranked_projects += p if not strict else []
@@ -96,6 +99,8 @@ class SPASTStrongSolver:
         for p in preference_list:
             if entity in p:
                 return p
+
+        return []
             
 
     def _P_k(self, l_k) -> list:
@@ -415,7 +420,7 @@ class SPASTStrongSolver:
 if __name__ == "__main__":
     s = SPASTIG_Random(
         num_students=5,
-        lower_bound=0,
+        lower_bound=3,
         upper_bound=3,
         num_projects=3,
         num_lecturers=1
