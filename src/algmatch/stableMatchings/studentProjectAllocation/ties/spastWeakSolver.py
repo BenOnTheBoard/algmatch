@@ -10,7 +10,6 @@ import gurobipy as gp
 from gurobipy import GRB
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel import FileReaderIPModel as FileReader
-from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
 
@@ -175,7 +174,7 @@ if __name__ == "__main__":
         G.solve()
         G_answer = G.assignments_as_dict()
 
-        B = Brute(filename="instance.txt")
+        B = Brute(filename="instance.txt", stability_type="weak")
         B.choose()
         answer_list = B.get_ssm_list()
 

@@ -432,7 +432,7 @@ if __name__ == "__main__":
         G.solve()
         G_answer = G.assignments_as_dict()
 
-        B = Brute(filename="instance.txt")
+        B = Brute(filename="instance.txt", stability_type="strong")
         B.choose()
         answer_list = B.get_ssm_list()
 

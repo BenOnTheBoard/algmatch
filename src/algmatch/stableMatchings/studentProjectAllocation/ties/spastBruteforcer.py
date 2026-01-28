@@ -2,8 +2,8 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstract import
 
 
 class SPASTBruteforcer(SPASTAbstract):
-    def __init__(self, filename):
-        super().__init__(filename=filename, stability_type="strong")
+    def __init__(self, filename: str, stability_type: str):
+        super().__init__(filename=filename, stability_type=stability_type)
 
         self.M = {}
         self.setup_M()
@@ -55,7 +55,7 @@ class SPASTBruteforcer(SPASTAbstract):
                 if self.lecturer_is_overfull(lecturer):
                     return
             # if stable add to solutions list
-            if self._check_strong_stability():
+            if self._check_stability():
                 self.save_matching()
 
         else:
