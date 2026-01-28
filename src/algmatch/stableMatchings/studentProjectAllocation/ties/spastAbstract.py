@@ -55,13 +55,18 @@ class SPASTAbstract:
             self._blocking_pair_bii,
             self._blocking_pair_biii,
         )
+        self.strong_blocking_conditions = (
+            self._blocking_pair_bi,
+            self._blockingpair_2bii,
+            self._blockingpair_2biii
+        )
         self.is_stable = False
 
     @staticmethod
     def _assert_valid_stability_type(st) -> None:
-        assert st is not None, "Select a stability type - either 'super' or 'strong'"
+        assert st is not None, "Select a stability type - either 'weak', 'super', or 'strong'"
         assert type(st) is str, "Stability type is not str'"
-        assert st.lower() in ("super", "strong"), (
+        assert st.lower() in ("weak", "super", "strong"), (
             "Stability type must be either 'super' or 'strong'"
         )
 
@@ -215,11 +220,7 @@ class SPASTAbstract:
             for p_tie in preferred_projects:
                 for project in p_tie:
                     lecturer = self.projects[project]["lecturer"]
-                    for condition in (
-                        self._blocking_pair_bi,
-                        self._blocking_pair_bii,
-                        self._blocking_pair_biii,
-                    ):
+                    for condition in self.super_blocking_conditions:
                         if condition(student, project, lecturer):
                             return False
                         
@@ -227,11 +228,7 @@ class SPASTAbstract:
                 if project == matched_project:
                     continue
                 lecturer = self.projects[project]["lecturer"]
-                for condition in (
-                    self._blocking_pair_bi,
-                    self._blockingpair_2bii,
-                    self._blockingpair_2biii
-                ):
+                for condition in self.strong_blocking_conditions:
                     if condition(student, project, lecturer):
                         return False
 
@@ -251,8 +248,14 @@ class SPASTAbstract:
 
             for p_tie in preferred_projects:
                 for project in p_tie:
+                    if project == matched_project:
+                        continue
+                    
                     lecturer = self.projects[project]["lecturer"]
-                    raise NotImplementedError("weak stability conditions are not yet implemented")
+                    for condition in self.super_blocking_conditions:
+                        if condition(student, project, lecturer):
+                            return False
+
         return True
 
     def _get_prefs(self, participant) -> dict:
