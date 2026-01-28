@@ -4,7 +4,7 @@ import time
 import numpy as np
 import os
 
-from spastSolver import GurobiSPAST
+from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import (
     SPASTIG_Abstract,
     SPASTIG_Euclidean,
@@ -46,7 +46,7 @@ def run_experiment(
         s.write_instance_to_file(filename)
 
         start_time = time.time()
-        G = GurobiSPAST(filename, output_flag=0)
+        G = SPASTStrongSolver(filename, output_flag=0)
         G.solve()
         end_time = time.time()
         time_results[i] = end_time - start_time

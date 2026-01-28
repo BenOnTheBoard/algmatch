@@ -14,7 +14,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer imp
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
 
 
-class GurobiSPAST:
+class SPASTWeakSolver:
     def __init__(self, filename: str, output_flag=1) -> None:
         self.filename = filename
         r = FileReader(filename)
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         s.generate_instance()
         s.write_instance_to_file('instance.txt')
 
-        G = GurobiSPAST("instance.txt", output_flag=0)
+        G = SPASTWeakSolver("instance.txt", output_flag=0)
         G.solve()
         G_answer = G.assignments_as_dict()
 
