@@ -57,7 +57,7 @@ class DictionaryReader(AbstractReader):
 
                         self.projects[project] = {
                             "lower_quota": 0,
-                            "upper_quota": capacity,
+                            "capacity": capacity,
                             "lecturer": offerer,
                         }
 
@@ -79,7 +79,7 @@ class DictionaryReader(AbstractReader):
                         preferences = [f"s{i}" for i in v["preferences"]]
 
                         self.lecturers[lecturer] = {
-                            "upper_quota": capacity,
+                            "capacity": capacity,
                             "projects": set(),
                             "list": preferences,
                             "rank": dict(),

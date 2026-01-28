@@ -34,7 +34,7 @@ class SPALecturerOptimal(SPAAbstract):
         return (
             self.M[s_i]["assigned"] != p_j
             and p_j in self.lecturers[L_k]["projects"]
-            and len(self.M[p_j]["assigned"]) < self.projects[p_j]["upper_quota"]
+            and len(self.M[p_j]["assigned"]) < self.projects[p_j]["capacity"]
         )
 
     def _find_valid_pair(self, L_k):
@@ -89,11 +89,11 @@ class SPALecturerOptimal(SPAAbstract):
 
             # check if lecturer is still under subscribed
             # TODO: check is this necessary since we are re-building list anyway?
-            if len(self.M[L_k]["assigned"]) == self.lecturers[L_k]["upper_quota"]:
+            if len(self.M[L_k]["assigned"]) == self.lecturers[L_k]["capacity"]:
                 self.under_subscribed_lecturers.remove(L_k)
 
             # build under subscribed list
             self.under_subscribed_lecturers = []
             for L in self.lecturers:
-                if len(self.M[L]["assigned"]) < self.lecturers[L]["upper_quota"]:
+                if len(self.M[L]["assigned"]) < self.lecturers[L]["capacity"]:
                     self.under_subscribed_lecturers.append(L)

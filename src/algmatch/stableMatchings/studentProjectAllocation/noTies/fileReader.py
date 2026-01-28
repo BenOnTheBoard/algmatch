@@ -77,7 +77,7 @@ class FileReader(AbstractReader):
 
             self.projects[project] = {
                 "lower_quota": 0,
-                "upper_quota": capacity,
+                "capacity": capacity,
                 "lecturer": offerer,
             }
 
@@ -107,7 +107,7 @@ class FileReader(AbstractReader):
             preferences = [f"s{i}" for i in entry[2:]]
 
             self.lecturers[lecturer] = {
-                "upper_quota": capacity,
+                "capacity": capacity,
                 "projects": set(),
                 "list": preferences,
                 "rank": rank,

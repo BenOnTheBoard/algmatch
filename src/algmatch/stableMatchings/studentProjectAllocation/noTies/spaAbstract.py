@@ -52,8 +52,8 @@ class SPAAbstract:
     # blocking pair types
     # =======================================================================
     def _blockingpair_1bi(self, _, project, lecturer):
-        cj = self.projects[project]["upper_quota"]
-        dk = self.original_lecturers[lecturer]["upper_quota"]
+        cj = self.projects[project]["capacity"]
+        dk = self.original_lecturers[lecturer]["capacity"]
 
         project_occupancy = len(self.M[project]["assigned"])
         lecturer_occupancy = len(self.M[lecturer]["assigned"])
@@ -63,8 +63,8 @@ class SPAAbstract:
         return False
 
     def _blockingpair_1bii(self, student, project, lecturer):
-        cj = self.projects[project]["upper_quota"]
-        dk = self.original_lecturers[lecturer]["upper_quota"]
+        cj = self.projects[project]["capacity"]
+        dk = self.original_lecturers[lecturer]["capacity"]
 
         project_occupancy = len(self.M[project]["assigned"])
         lecturer_occupancy = len(self.M[lecturer]["assigned"])
@@ -83,7 +83,7 @@ class SPAAbstract:
         return False
 
     def _blockingpair_1biii(self, student, project, _):
-        cj = self.projects[project]["upper_quota"]
+        cj = self.projects[project]["capacity"]
         project_occupancy = len(self.M[project]["assigned"])
 
         if project_occupancy == cj:

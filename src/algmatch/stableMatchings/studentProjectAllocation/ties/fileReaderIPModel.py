@@ -36,14 +36,14 @@ class FileReaderIPModel(AbstractReader):
         for project in self._file_reader.projects:
             project_data = self._file_reader.projects[project]
             self.projects[project] = [
-                project_data["upper_quota"],
+                project_data["capacity"],
                 project_data["lecturer"],
             ]
 
         for lecturer in self._file_reader.lecturers:
             lecturer_data = self._file_reader.lecturers[lecturer]
             self.lecturers[lecturer] = [
-                lecturer_data["upper_quota"],
+                lecturer_data["capacity"],
                 lecturer_data["list"],
             ]
 

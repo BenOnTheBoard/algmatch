@@ -140,14 +140,14 @@ class SPAStudentOptimal(SPAAbstract):
                 # ----------- if project is oversubscribed -----------
                 if (
                     len(self.M[project]["assigned"])
-                    > self.projects[project]["upper_quota"]
+                    > self.projects[project]["capacity"]
                 ):
                     worst_student = self.M[project]["worst_student"]
                     self._break_assignment(worst_student, project, lecturer)
                 # ----------- elif lecturer is oversubscribed -----------
                 elif (
                     len(self.M[lecturer]["assigned"])
-                    > self.lecturers[lecturer]["upper_quota"]
+                    > self.lecturers[lecturer]["capacity"]
                 ):
                     worst_student = self.M[lecturer]["worst_student"]
                     # print(f"{worst_student}: {self.M[worst_student]} : {self.delete[worst_student]}")
@@ -159,7 +159,7 @@ class SPAStudentOptimal(SPAAbstract):
                 # ----------- if project is full -----------
                 if (
                     len(self.M[project]["assigned"])
-                    == self.projects[project]["upper_quota"]
+                    == self.projects[project]["capacity"]
                 ):
                     worst_student = self.M[project]["worst_student"]
                     rank_worst_student = self.projects[project]["rank"][worst_student]
@@ -180,7 +180,7 @@ class SPAStudentOptimal(SPAAbstract):
                 # ----------- if lecturer is full -----------
                 if (
                     len(self.M[lecturer]["assigned"])
-                    == self.lecturers[lecturer]["upper_quota"]
+                    == self.lecturers[lecturer]["capacity"]
                 ):
                     worst_student = self.M[lecturer]["worst_student"]
                     rank_worst_student = self.lecturers[lecturer]["rank"][worst_student]

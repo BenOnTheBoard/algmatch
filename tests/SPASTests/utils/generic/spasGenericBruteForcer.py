@@ -14,14 +14,14 @@ class SPASGenericBruteForcer:
         if "capacity" in p_info:
             return self.projects[p]["capacity"] == len(self.M[p]["assigned"])
         else:
-            return self.projects[p]["upper_quota"] == len(self.M[p]["assigned"])
+            return self.projects[p]["capacity"] == len(self.M[p]["assigned"])
 
     def lecturer_is_full(self, L):
         l_info = self.lecturers[L]
         if "capacity" in l_info:
             return self.lecturers[L]["capacity"] == len(self.M[L]["assigned"])
         else:
-            return self.lecturers[L]["upper_quota"] == len(self.M[L]["assigned"])
+            return self.lecturers[L]["capacity"] == len(self.M[L]["assigned"])
 
     def add_triple(self, student, project, lecturer):
         self.M[student]["assigned"] = project

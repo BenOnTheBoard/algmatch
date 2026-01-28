@@ -14,10 +14,10 @@ class SPASTBruteforcer(SPASTAbstract):
         self.student_order_comparator = lambda s: int(s[1:])
 
     def project_is_overfull(self, p):
-        return self.projects[p]["upper_quota"] < len(self.M[p]["assigned"])
+        return self.projects[p]["capacity"] < len(self.M[p]["assigned"])
 
     def lecturer_is_overfull(self, L):
-        return self.lecturers[L]["upper_quota"] < len(self.M[L]["assigned"])
+        return self.lecturers[L]["capacity"] < len(self.M[L]["assigned"])
 
     def add_triple(self, student, project, lecturer):
         self.M[student]["assigned"] = project
