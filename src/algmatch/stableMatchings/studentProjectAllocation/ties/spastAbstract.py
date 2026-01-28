@@ -169,11 +169,11 @@ class SPASTAbstract:
     def _check_stability(self) -> bool:
         match self.stability_type:
             case "super":
-                return self._check_super_stability
+                return self._check_super_stability()
             case "strong":
-                return self._check_strong_stability
+                return self._check_strong_stability()
             case "weak":
-                return self._check_weak_stability
+                return self._check_weak_stability()
 
     def _check_super_stability(self) -> bool:
         # stability must be checked with regards to the original lists prior to deletions
