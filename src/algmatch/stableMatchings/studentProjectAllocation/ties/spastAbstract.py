@@ -165,6 +165,15 @@ class SPASTAbstract:
                 if student_rank < worst_student_rank:
                     return True
         return False
+    
+    def _check_stability(self) -> bool:
+        match self.stability_type:
+            case "super":
+                return self._check_super_stability
+            case "strong":
+                return self._check_strong_stability
+            case "weak":
+                return self._check_weak_stability
 
     def _check_super_stability(self) -> bool:
         # stability must be checked with regards to the original lists prior to deletions
@@ -230,6 +239,9 @@ class SPASTAbstract:
                             return False
 
         return True
+    
+    def _check_weak_stability()-> bool:
+        raise NotImplementedError("weak stability checking is not implemented")
 
     def _get_prefs(self, participant) -> dict:
         if participant in self.students:
@@ -376,11 +388,7 @@ class SPASTAbstract:
             self._save_student_sided()
             self._save_lecturer_sided()
 
-            if self.stability_type == "super":
-                self.is_stable = self._check_super_stability()
-            else:
-                self.is_stable = self._check_strong_stability()
-
+            self.is_stable = self._check_stability()
             if self.is_stable:
-                return f"super-stable matching: {self.stable_matching}"
-        return "no super-stable matching"
+                return f"stable matching: {self.stable_matching}"
+        return "no stable matching"
