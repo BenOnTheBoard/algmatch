@@ -50,12 +50,12 @@ class SPASTAbstract:
             "lecturer_sided": {lecturer: set() for lecturer in self.lecturers},
         }
 
-        self.super_blocking_conditions = (
+        self.loose_blocking_conditions = (
             self._blocking_pair_bi,
             self._blocking_pair_bii,
             self._blocking_pair_biii,
         )
-        self.strong_blocking_conditions = (
+        self.strict_blocking_conditions = (
             self._blocking_pair_bi,
             self._blockingpair_2bii,
             self._blockingpair_2biii
@@ -199,7 +199,7 @@ class SPASTAbstract:
                         continue
 
                     lecturer = self.projects[project]["lecturer"]
-                    for condition in self.super_blocking_conditions:
+                    for condition in self.loose_blocking_conditions:
                         if condition(student, project, lecturer):
                             return False
 
@@ -220,7 +220,7 @@ class SPASTAbstract:
             for p_tie in preferred_projects:
                 for project in p_tie:
                     lecturer = self.projects[project]["lecturer"]
-                    for condition in self.super_blocking_conditions:
+                    for condition in self.loose_blocking_conditions:
                         if condition(student, project, lecturer):
                             return False
                         
@@ -228,7 +228,7 @@ class SPASTAbstract:
                 if project == matched_project:
                     continue
                 lecturer = self.projects[project]["lecturer"]
-                for condition in self.strong_blocking_conditions:
+                for condition in self.strict_blocking_conditions:
                     if condition(student, project, lecturer):
                         return False
 
@@ -252,7 +252,7 @@ class SPASTAbstract:
                         continue
                     
                     lecturer = self.projects[project]["lecturer"]
-                    for condition in self.super_blocking_conditions:
+                    for condition in self.strict_blocking_conditions:
                         if condition(student, project, lecturer):
                             return False
 
