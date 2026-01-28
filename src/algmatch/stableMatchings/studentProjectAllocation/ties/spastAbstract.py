@@ -202,19 +202,15 @@ class SPASTAbstract:
 
     def _check_strong_stability(self) -> bool:
         for student, s_prefs in self.original_students.items():
-            preferred_projects = s_prefs["list"]
-            indifferent_projects = []
             matched_project = self.M[student]["assigned"]
             
             if matched_project is not None:
                 rank_matched_project = s_prefs["rank"][matched_project]
-                preferred_projects = [
-                    p for tie in s_prefs["list"][:rank_matched_project] for p in tie
-                ]
-                indifferent_projects = [
-                    p for p in s_prefs["list"][rank_matched_project]
-                ]
-                indifferent_projects.remove(matched_project)
+                preferred_projects = s_prefs["list"][:rank_matched_project]
+                indifferent_projects = s_prefs["list"][rank_matched_project]
+            else:
+                preferred_projects = s_prefs["list"]
+                indifferent_projects = []
 
             for p_tie in preferred_projects:
                 for project in p_tie:
@@ -227,21 +223,37 @@ class SPASTAbstract:
                         if condition(student, project, lecturer):
                             return False
                         
-            for p_tie in indifferent_projects:
-                for project in p_tie:
-                    lecturer = self.projects[project]["lecturer"]
-                    for condition in (
-                        self._blocking_pair_bi,
-                        self._blockingpair_2bii,
-                        self._blockingpair_2biii
-                    ):
-                        if condition(student, project, lecturer):
-                            return False
+            for project in indifferent_projects:
+                if project == matched_project:
+                    continue
+                lecturer = self.projects[project]["lecturer"]
+                for condition in (
+                    self._blocking_pair_bi,
+                    self._blockingpair_2bii,
+                    self._blockingpair_2biii
+                ):
+                    if condition(student, project, lecturer):
+                        return False
 
         return True
     
-    def _check_weak_stability()-> bool:
-        raise NotImplementedError("weak stability checking is not implemented")
+    def _check_weak_stability(self)-> bool:
+        # stability must be checked with regards to the original lists prior to deletions
+        for student, s_prefs in self.original_students.items():
+            matched_project = self.M[student]["assigned"]
+
+            if matched_project is None:
+                preferred_projects = s_prefs["list"]
+            else:
+                rank_matched_project = s_prefs["rank"][matched_project]
+                # every project that s_i prefers to her matched project
+                preferred_projects = s_prefs["list"][: rank_matched_project]
+
+            for p_tie in preferred_projects:
+                for project in p_tie:
+                    lecturer = self.projects[project]["lecturer"]
+                    raise NotImplementedError("weak stability conditions are not yet implemented")
+        return True
 
     def _get_prefs(self, participant) -> dict:
         if participant in self.students:
