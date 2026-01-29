@@ -45,7 +45,7 @@ class SPASTWeakSolver:
             idx += 1
             if idx == len(preference_list): return outranked_projects
             p = preference_list[idx]
-        
+
         outranked_projects += p if not strict else []
         return outranked_projects
 
@@ -68,7 +68,7 @@ class SPASTWeakSolver:
                 outranked_sum = gp.LinExpr()
                 for p_r in self._get_outranked_entities(self._students[s_i][0], p_j):
                     outranked_sum += self._students[s_i][1][p_r]
-                    
+
                 self.J.addConstr(1 - outranked_sum <= alpha_ij + beta_ij, f"Constraint 5. for {s_i}, {p_j}")
 
                 T_ik = set(self._get_outranked_entities(self._lecturers[l_k][1], s_i))
@@ -106,7 +106,7 @@ class SPASTWeakSolver:
                 P_k = [p_r for p_r in self._projects if self._projects[p_r][1] == l_k]
                 for p_j in P_k:
                     sum_student_variables += self._students[s_i][1][p_j]
-            
+
             self.J.addConstr(sum_student_variables <= self._lecturers[l_k][0], f"Constraint 4. for {l_k}")
 
 
@@ -118,7 +118,7 @@ class SPASTWeakSolver:
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
 
-    
+
     def display_assignments(self) -> bool:
         # assumes model has been solved
         if self.J.Status != GRB.OPTIMAL:
@@ -133,8 +133,8 @@ class SPASTWeakSolver:
                     print(f"{student} -> {project}")
 
         return True
-    
-    def assignments_as_dict(self) -> dict:
+
+    def assignments_as_dict(self) -> dict | None:
         if self.J.Status != GRB.OPTIMAL:
             return None
 

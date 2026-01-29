@@ -87,7 +87,7 @@ class SPASTStrongSolver:
             idx += 1
             if idx == len(preference_list): return outranked_projects
             p = preference_list[idx]
-        
+
         outranked_projects += p if not strict else []
         return outranked_projects
 
@@ -101,7 +101,7 @@ class SPASTStrongSolver:
                 return p
 
         return []
-            
+
 
     def _P_k(self, l_k) -> list:
         """
@@ -110,7 +110,7 @@ class SPASTStrongSolver:
         return [
             project for project in self._projects if self._projects[project][1] == l_k
         ]
-    
+
 
     def _L_k_j(self, l_k, p_j) -> list:
         """
@@ -147,7 +147,7 @@ class SPASTStrongSolver:
         theta_ij.add(sum_outranked_projects, -1)
 
         return theta_ij
-    
+
 
     def _theta_star(self, s_i, p_j) -> gp.LinExpr:
         """
@@ -165,7 +165,7 @@ class SPASTStrongSolver:
         theta_star_ij.add(self._students[s_i][1][p_j], -1)
 
         return theta_star_ij
-    
+
 
     def _get_project_occupancy(self, project) -> gp.LinExpr:
         """
@@ -192,7 +192,7 @@ class SPASTStrongSolver:
                     lecturer_occupancy += self._students[student][1][project]
 
         return lecturer_occupancy
-    
+
 
     def _alpha(self, p_j) -> gp.Var:
         """
@@ -221,7 +221,7 @@ class SPASTStrongSolver:
         self.J.addConstr(d_k * beta_k >= d_k - lecturer_occupancy, f"Constraint (4.9) for {l_k}")
         return beta_k
 
-    
+
     def _eta(self, l_k) -> gp.Var:
         """
         eta_k in {0, 1} s.t. (1 <= k <= |L|)
@@ -257,7 +257,7 @@ class SPASTStrongSolver:
         # or l_k is indifferent between them, delta_{ik} = 1
         self.J.addConstr(d_k * delta_ik >= lecturer_occupancy - lecturer_preferred_occupancy, f"Constraint (4.12) for {s_i} {l_k}")
         return delta_ik
-    
+
 
     def _gamma(self, p_k) -> gp.Var:
         """
@@ -271,7 +271,7 @@ class SPASTStrongSolver:
         # CONSTRAINT: if p_j is full in M, gamma_j = 1
         self.J.addConstr(c_j * gamma_j >= 1 + project_occupancy - c_j, f"Constraint (4.14) for {p_k}")
         return gamma_j
-    
+
 
     def _lambda(self, s_i, p_j, l_k) -> gp.Var:
         """
@@ -300,7 +300,7 @@ class SPASTStrongSolver:
                 omega_ik += self._students[s_i][1][project]
 
         return omega_ik
-    
+
 
     def _mu(self, s_i, l_k) -> gp.Var:
         """
@@ -322,7 +322,7 @@ class SPASTStrongSolver:
         # CONSTRAINT: if s_i in M(l_k) or l_k prefers s_i to a worst student in M(l_k), mu_{ik} = 1
         self.J.addConstr(d_k * mu_ik >= omega_ik + lecturer_occupancy - lecturer_preferred_occupancy, f"Constraint (5.15) for {s_i} {l_k}")
         return mu_ik
-    
+
 
     def _tau(self, s_i, p_j, l_k) -> gp.Var:
         """
@@ -342,7 +342,7 @@ class SPASTStrongSolver:
         self.J.addConstr(c_j * tau_ijk >= project_occupancy - project_preferred_occupancy, f"Constraint (5.17) for {s_i} {p_j} {l_k}")
         return tau_ijk
 
-    
+
     def _blocking_pair_constraints(self) -> None:
         for s_i in self._students:
             for p_j in self._students[s_i][1]:
@@ -380,7 +380,7 @@ class SPASTStrongSolver:
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
 
-    
+
     def display_assignments(self) -> bool:
         # assumes model has been solved
         if self.J.Status != GRB.OPTIMAL:
@@ -395,8 +395,8 @@ class SPASTStrongSolver:
                     print(f"{student} -> {project}")
 
         return True
-    
-    def assignments_as_dict(self) -> dict:
+
+    def assignments_as_dict(self) -> dict | None:
         if self.J.Status != GRB.OPTIMAL:
             return None
 
