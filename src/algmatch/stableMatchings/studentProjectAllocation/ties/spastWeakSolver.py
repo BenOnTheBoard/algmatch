@@ -50,6 +50,10 @@ class SPASTWeakSolver:
         return outranked_projects
 
 
+    def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
+        return any(element in tie for tie in entity_preference_list)
+
+
     def _constraints(self) -> None:
         for s_i in self._students:
             sum_student_variables = gp.LinExpr()
@@ -59,7 +63,7 @@ class SPASTWeakSolver:
                 x_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{s_i} is assigned to {p_j}")
                 self._students[s_i][1][p_j] = x_ij
                 sum_student_variables += x_ij
-                if all(p_j not in tie for tie in self._students[s_i][0]):
+                if not self._entity_list_ranks_element(self._students[s_i][0], p_j):
                     self.J.addConstr(x_ij <= 0, f"Constraint 1. for {s_i}, {p_j}")
 
                 alpha_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"alpha_{s_i}{p_j}")
@@ -82,7 +86,8 @@ class SPASTWeakSolver:
                 self.J.addConstr(constraint_sum >= self._lecturers[l_k][0] * alpha_ij, f"Constraint 6. for {s_i}, {p_j}")
 
                 T_ijk = set(
-                    s_u for s_u in self._get_outranked_entities(self._lecturers[l_k][1], s_i) if p_j in self._students[s_u][1]
+                    s_u for s_u in self._get_outranked_entities(self._lecturers[l_k][1], s_i)
+                    if self._entity_list_ranks_element(self._students[s_u][0], p_j)
                 )
                 T_ijk.discard(s_i)
                 constraint_sum = gp.LinExpr()
@@ -195,6 +200,7 @@ if __name__ == "__main__":
     print(f"""
           Model Test Results:
             Right: {results["right"]}, {100*results["right"]/runs}%
-                Maximal matching found: {results["maximal"]}, {100*results["maximal"]/results["right"]:.2f}%
+                {f"Maximal matching found: {results["maximal"]}, {100*results["maximal"]/results["right"]:.2f}%"
+                    if results["right"] > 0 else ""}
             Wrong: {results["wrong"]}, {100*results["wrong"]/runs}%
     """)
