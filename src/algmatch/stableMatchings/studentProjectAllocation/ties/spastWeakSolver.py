@@ -28,10 +28,6 @@ class SPASTWeakSolver:
 
         self.matching = defaultdict(str)
 
-        print(f"STUDENTS: {self._students}")
-        print(f"LECTURERS: {self._lecturers}")
-        print(f"PROJECTS: {self._projects}")
-
 
     def _get_outranked_entities(self, preference_list, entity, strict=False) -> list:
         """
@@ -63,7 +59,7 @@ class SPASTWeakSolver:
                 x_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{s_i} is assigned to {p_j}")
                 self._students[s_i][1][p_j] = x_ij
                 sum_student_variables += x_ij
-                if all(p_j not in tie for tie in self._students[s_i][1]):
+                if all(p_j not in tie for tie in self._students[s_i][0]):
                     self.J.addConstr(x_ij <= 0, f"Constraint 1. for {s_i}, {p_j}")
 
                 alpha_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"alpha_{s_i}{p_j}")
