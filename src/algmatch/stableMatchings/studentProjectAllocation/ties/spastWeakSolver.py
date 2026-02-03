@@ -203,10 +203,13 @@ if __name__ == "__main__":
         else:
             results["wrong"] += 1
 
-    print(f"""
-          Model Test Results:
-            Right: {results["right"]}, {100*results["right"]/runs}%
-                {f"Maximal matching found: {results["maximal"]}, {100*results["maximal"]/results["right"]:.2f}%"
-                    if results["right"] > 0 else ""}
-            Wrong: {results["wrong"]}, {100*results["wrong"]/runs}%
-    """)
+    message = []
+    message.append("")
+    message.append("\tModel Test Results:")
+    message.append(f"\t  Right: {results['right']}, {100*results['right']/runs:.2f}%")
+    if results['right'] > 0:
+        message.append(f"\t    Maximal matching found: {results['maximal']}, {100*results['maximal']/results['right']:.2f}%")
+    message.append(f"\t  Wrong: {results['wrong']}, {100*results['wrong']/runs}%")
+    message.append("")
+
+    print("\n".join(message))
