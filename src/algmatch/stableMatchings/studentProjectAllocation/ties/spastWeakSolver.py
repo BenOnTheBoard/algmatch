@@ -52,19 +52,41 @@ class SPASTWeakSolver:
 
     def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
         return any(element in tie for tie in entity_preference_list)
+    
+    def _matching_constraints(self) -> None:
+        for s_i in self._students:
+            sum_student_variables = gp.LinExpr()
+            for p_j in self._students[s_i][1]:
+                xij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{s_i} is assigned {p_j}")
+                self._students[s_i][1][p_j] = xij
+                sum_student_variables += xij
+                if not self._entity_list_ranks_element(self._students[s_i][0], p_j):
+                    self.J.addConstr(self._students[s_i][1][p_j] <= 0, f"Constraint 1. for {s_i}, {p_j}")
 
+            self.J.addConstr(sum_student_variables <= 1, f"Single assignment constraint for {s_i}")
 
-    def _constraints(self) -> None:
+        for p_j in self._projects:
+            total_project_capacity = gp.LinExpr()
+            for student in self._students:
+                if p_j in self._students[student][1]:
+                    total_project_capacity += self._students[student][1][p_j]
+
+            self.J.addConstr(total_project_capacity <= self._projects[p_j][0], f"Total capacity constraint for {p_j}")
+
+        for l_k in self._lecturers:
+            total_lecturer_capacity = gp.LinExpr()
+            for student in self._students:
+                for project in self._students[student][1]:
+                    if l_k == self._projects[project][1]:
+                        total_lecturer_capacity += self._students[student][1][project]
+
+            self.J.addConstr(total_lecturer_capacity <= self._lecturers[l_k][0], f"Total capacity constraint for {l_k}")
+
+    def _blocking_pair_constraints(self) -> None:
         for s_i in self._students:
             sum_student_variables = gp.LinExpr()
             for p_j in self._projects:
                 l_k = self._projects[p_j][1]
-
-                x_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{s_i} is assigned to {p_j}")
-                self._students[s_i][1][p_j] = x_ij
-                sum_student_variables += x_ij
-                if not self._entity_list_ranks_element(self._students[s_i][0], p_j):
-                    self.J.addConstr(x_ij <= 0, f"Constraint 1. for {s_i}, {p_j}")
 
                 alpha_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"alpha_{s_i}{p_j}")
                 beta_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"beta_{s_i}{p_j}")
@@ -97,23 +119,6 @@ class SPASTWeakSolver:
                 self.J.addConstr(constraint_sum >= self._projects[p_j][0] * beta_ij, f"Constraint 7. for {s_i}, {p_j}")
 
             self.J.addConstr(sum_student_variables <= 1, f"Constraint 2. for {s_i}")
-
-        for p_j in self._projects:
-            sum_student_variables = gp.LinExpr()
-            for s_i in self._students:
-                sum_student_variables += self._students[s_i][1][p_j]
-
-            self.J.addConstr(sum_student_variables <= self._projects[p_j][0], f"Constraint 3. for {p_j}")
-
-        for l_k in self._lecturers:
-            sum_student_variables = gp.LinExpr()
-            for s_i in self._students:
-                P_k = [p_r for p_r in self._projects if self._projects[p_r][1] == l_k]
-                for p_j in P_k:
-                    sum_student_variables += self._students[s_i][1][p_j]
-
-            self.J.addConstr(sum_student_variables <= self._lecturers[l_k][0], f"Constraint 4. for {l_k}")
-
 
     def _objective_function(self) -> None:
         all_xij = gp.LinExpr()
@@ -153,7 +158,8 @@ class SPASTWeakSolver:
 
 
     def solve(self) -> None:
-        self._constraints()
+        self._matching_constraints()
+        self._blocking_pair_constraints()
         self._objective_function()
 
         self.J.optimize()
@@ -161,11 +167,11 @@ class SPASTWeakSolver:
 
 if __name__ == "__main__":
     s = SPASTIG_Random(
-        num_students=5,
-        lower_bound=3,
-        upper_bound=3,
-        num_projects=3,
-        num_lecturers=1
+        num_students=6,
+        lower_bound=4,
+        upper_bound=4,
+        num_projects=4,
+        num_lecturers=2
     )
     runs = 100
 
