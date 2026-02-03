@@ -27,7 +27,7 @@ class AbstractInstanceGenerator(ABC):
             without ties
             - if the tie density is 1 on both sides, then the program writes an instance of SPA-ST,
             where each preference list is a single tie of length 1
-        
+
         * the tie density given is the probability (decided at random) that a project (or student) will be tied
         with its successor.
 
@@ -38,7 +38,7 @@ class AbstractInstanceGenerator(ABC):
         :param upper_bound: int, upper bound of the students' preference list length
         :param num_projects: int, number of projects
         :param num_lecturers: int, number of lecturers
-        :param student_tie_density: float, [0, 1], the density of tie in the students preference list 
+        :param student_tie_density: float, [0, 1], the density of tie in the students preference list
         :param lecturer_tie_density: float, [0, 1], the density of tie in the lecturers preference list
         :param force_project_capacity: int, value to force project capacity
         :param force_lecturer_capacity: int, value to force lecturer capacity
@@ -101,7 +101,7 @@ class AbstractInstanceGenerator(ABC):
 
         return pref_list
 
-    
+
     def _add_ties_to_list(self, pref_list, density):
         """
         Given a preference list, group elements by the given density.
@@ -180,6 +180,7 @@ class AbstractInstanceGenerator(ABC):
         """
         if filename.endswith('.txt'): delim = ' '
         elif filename.endswith('.csv'): delim = ','
+        else: raise ValueError(f"Unsupported file extension: {filename}")
 
         with open(filename, 'w') as f:
             f.write(delim.join(map(str, [self._num_students, self._num_projects, self._num_lecturers])) + '\n')

@@ -88,6 +88,7 @@ class AbstractInstanceGenerator(ABC):
         """
         if filename.endswith('.txt'): delim = ' '
         elif filename.endswith('.csv'): delim = ','
+        else: raise ValueError(f"Unsupported file extension: {filename}")
 
         with open(filename, 'w') as f:
             f.write(delim.join(map(str, [self._num_students, self._num_projects, self._num_lecturers])) + '\n')
