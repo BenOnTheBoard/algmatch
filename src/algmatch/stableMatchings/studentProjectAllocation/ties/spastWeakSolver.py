@@ -52,7 +52,7 @@ class SPASTWeakSolver:
 
     def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
         return any(element in tie for tie in entity_preference_list)
-    
+
     def _matching_constraints(self) -> None:
         for s_i in self._students:
             sum_student_variables = gp.LinExpr()
@@ -173,13 +173,14 @@ if __name__ == "__main__":
         num_projects=4,
         num_lecturers=2
     )
-    runs = 10_000
+    runs = 1_000
 
     results = {
         "right": 0,
         "wrong": 0,
         "maximal": 0
     }
+    matching_size = lambda d: sum(int(bool(v)) for v in d.values())
 
     for _ in tqdm(range(runs)):
         s.generate_instance()
@@ -198,7 +199,7 @@ if __name__ == "__main__":
             results["wrong"] += 1
         elif G_answer in answer_list:
             results["right"] += 1
-            if G_answer == answer_list[0]:
+            if matching_size(G_answer) == max(map(matching_size, answer_list)):
                 results["maximal"] += 1
         else:
             results["wrong"] += 1
