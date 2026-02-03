@@ -12,46 +12,17 @@ from gurobipy import GRB
 from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel import FileReaderIPModel as FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
+from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstractSolver import SPASTAbstractSolver
 
 
-class SPASTWeakSolver:
+class SPASTWeakSolver(SPASTAbstractSolver):
     def __init__(self, filename: str, output_flag=1) -> None:
-        self.filename = filename
-        r = FileReader(filename)
-
-        self._students = r.students
-        self._projects = r.projects
-        self._lecturers = r.lecturers
-
-        self.J = gp.Model("SPAST")
-        self.J.setParam('OutputFlag', output_flag)
-
-        self.matching = defaultdict(str)
-
-
-    def _get_outranked_entities(self, preference_list, entity, strict=False) -> list:
-        """
-        Get entities that outrank entity in preference list
-
-        :param strict: if True, only return entities that strictly outrank entity
-        """
-        if len(preference_list) == 0: return []
-
-        idx = 0
-        p = preference_list[idx]
-        outranked_projects = []
-        while entity not in p:
-            outranked_projects += p
-            idx += 1
-            if idx == len(preference_list): return outranked_projects
-            p = preference_list[idx]
-
-        outranked_projects += p if not strict else []
-        return outranked_projects
+        super().__init__(filename, "SPAST_Weak",output_flag)
 
 
     def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
         return any(element in tie for tie in entity_preference_list)
+
 
     def _matching_constraints(self) -> None:
         for s_i in self._students:
@@ -81,6 +52,7 @@ class SPASTWeakSolver:
                         total_lecturer_capacity += self._students[student][1][project]
 
             self.J.addConstr(total_lecturer_capacity <= self._lecturers[l_k][0], f"Total capacity constraint for {l_k}")
+
 
     def _blocking_pair_constraints(self) -> None:
         for s_i in self._students:
@@ -120,6 +92,7 @@ class SPASTWeakSolver:
 
             self.J.addConstr(sum_student_variables <= 1, f"Constraint 2. for {s_i}")
 
+
     def _objective_function(self) -> None:
         all_xij = gp.LinExpr()
         for s_i in self._students:
@@ -127,34 +100,6 @@ class SPASTWeakSolver:
                     all_xij += x_ij
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
-
-
-    def display_assignments(self) -> bool:
-        # assumes model has been solved
-        if self.J.Status != GRB.OPTIMAL:
-            print("\nNo solution found. ILP written to spast.ilp file.")
-            self.J.computeIIS()
-            self.J.write("spast.ilp")
-            return False
-
-        for student in self._students:
-            for project, xij in self._students[student][1].items():
-                if xij.x == 1:
-                    print(f"{student} -> {project}")
-
-        return True
-
-    def assignments_as_dict(self) -> dict | None:
-        if self.J.Status != GRB.OPTIMAL:
-            return None
-
-        assignments = {}
-        for student in self._students:
-            assignments[student] = ""
-            for project, xij in self._students[student][1].items():
-                if xij.x == 1:
-                    assignments[student] = project
-        return assignments
 
 
     def solve(self) -> None:

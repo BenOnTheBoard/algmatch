@@ -12,21 +12,12 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel im
 from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
+from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstractSolver import SPASTAbstractSolver
 
 
-class SPASTStrongSolver:
+class SPASTStrongSolver(SPASTAbstractSolver):
     def __init__(self, filename: str, output_flag=1) -> None:
-        self.filename = filename
-        r = FileReader(filename)
-
-        self._students = r.students
-        self._projects = r.projects
-        self._lecturers = r.lecturers
-
-        self.J = gp.Model("SPAST")
-        self.J.setParam('OutputFlag', output_flag)
-
-        self.matching = defaultdict(str)
+        super().__init__(filename, "SPAST_Strong", output_flag)
 
 
     def _matching_constraints(self) -> None:
@@ -69,27 +60,6 @@ class SPASTStrongSolver:
 
             # CONSTRAINT: lecturer does not exceed capacity
             self.J.addConstr(total_lecturer_capacity <= self._lecturers[lecturer][0], f"Total capacity constraint (4.7) for {lecturer}")
-
-
-    def _get_outranked_entities(self, preference_list, entity, strict=False) -> list:
-        """
-        Get entities that outrank entity in preference list
-
-        :param strict: if True, only return entities that strictly outrank entity
-        """
-        if len(preference_list) == 0: return []
-
-        idx = 0
-        p = preference_list[idx]
-        outranked_projects = []
-        while entity not in p:
-            outranked_projects += p
-            idx += 1
-            if idx == len(preference_list): return outranked_projects
-            p = preference_list[idx]
-
-        outranked_projects += p if not strict else []
-        return outranked_projects
 
 
     def _get_equal_entities(self, preference_list, entity) -> list:
@@ -379,34 +349,6 @@ class SPASTStrongSolver:
                     all_xij += x_ij
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
-
-
-    def display_assignments(self) -> bool:
-        # assumes model has been solved
-        if self.J.Status != GRB.OPTIMAL:
-            print("\nNo solution found. ILP written to spast.ilp file.")
-            self.J.computeIIS()
-            self.J.write("spast.ilp")
-            return False
-
-        for student in self._students:
-            for project, xij in self._students[student][1].items():
-                if xij.x == 1:
-                    print(f"{student} -> {project}")
-
-        return True
-
-    def assignments_as_dict(self) -> dict | None:
-        if self.J.Status != GRB.OPTIMAL:
-            return None
-
-        assignments = {}
-        for student in self._students:
-            assignments[student] = ""
-            for project, xij in self._students[student][1].items():
-                if xij.x == 1:
-                    assignments[student] = project
-        return assignments
 
 
     def solve(self) -> None:
