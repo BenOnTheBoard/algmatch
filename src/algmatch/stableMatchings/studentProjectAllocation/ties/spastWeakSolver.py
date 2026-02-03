@@ -173,7 +173,7 @@ if __name__ == "__main__":
         num_projects=4,
         num_lecturers=2
     )
-    runs = 100
+    runs = 10_000
 
     results = {
         "right": 0,
@@ -205,11 +205,18 @@ if __name__ == "__main__":
 
     message = []
     message.append("")
-    message.append("\tModel Test Results:")
-    message.append(f"\t  Right: {results['right']}, {100*results['right']/runs:.2f}%")
+    message.append("Instances:")
+    message.append(f"  num_students = {s._num_students}")
+    message.append(f"  lower_bound = {s._li}")
+    message.append(f"  upper_bound = {s._lj}")
+    message.append(f"  num_projects = {s._num_projects}")
+    message.append(f"  num_lecturers = {s._num_lecturers}")
+    message.append("")
+    message.append("Model Test Results:")
+    message.append(f"  Right: {results['right']}, {100*results['right']/runs:.2f}%")
     if results['right'] > 0:
-        message.append(f"\t    Maximal matching found: {results['maximal']}, {100*results['maximal']/results['right']:.2f}%")
-    message.append(f"\t  Wrong: {results['wrong']}, {100*results['wrong']/runs}%")
+        message.append(f"    Maximal matching found: {results['maximal']}, {100*results['maximal']/results['right']:.2f}%")
+    message.append(f"  Wrong: {results['wrong']}, {100*results['wrong']/runs}%")
     message.append("")
 
-    print("\n".join(message))
+    print("\n\t".join(message))
