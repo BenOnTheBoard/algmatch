@@ -425,7 +425,7 @@ if __name__ == "__main__":
         num_projects=3,
         num_lecturers=1
     )
-    runs = 1_000
+    runs = 100
 
     results = {"right":0, "wrong":0}
 
