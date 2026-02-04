@@ -86,6 +86,15 @@ class EntityPreferenceInstance:
 
     def discard(self, elt):
         if elt in self:
-            return EntityPreferenceInstance(tuple(EntityPreferenceInstance(x) for x in self.values if x != elt))
+            self._remove_from_tied(elt)
 
         return self
+
+    def copy(self):
+        return EntityPreferenceInstance(self.values)
+
+    def remove(self, elt):
+        if elt in self:
+            self._remove_from_tied(elt)
+        else:
+            raise KeyError(f"{elt} not in preference")
