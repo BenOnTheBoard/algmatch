@@ -70,6 +70,8 @@ Params:
     num_lecturers: {num_lecturers}
     runs: {runs}
     kwargs: {kwargs}
+
+{time_results.mean()}
         """, file=f)
 
 
