@@ -38,8 +38,7 @@ class SPASTWeakSolver(SPASTAbstractSolver):
         for p_j in self._projects:
             total_project_capacity = gp.LinExpr()
             for s_i in self._students:
-                if p_j in self._students[s_i][1]:
-                    total_project_capacity += self._students[s_i][1][p_j]
+                total_project_capacity += self._students[s_i][1][p_j]
 
             self.J.addConstr(total_project_capacity <= self._projects[p_j][0], f"Total capacity constraint for {p_j}")
 
@@ -112,7 +111,7 @@ class SPASTWeakSolver(SPASTAbstractSolver):
 if __name__ == "__main__":
     s = SPASTIG_Random(
         num_students=6,
-        lower_bound=1,
+        lower_bound=0,
         upper_bound=4,
         num_projects=4,
         num_lecturers=2
