@@ -3,7 +3,6 @@ Using Gurobi Integer Programming solver to solve the SPA-ST problem.
 This time with weak stability.
 """
 
-from collections import defaultdict
 from tqdm import tqdm
 
 import gurobipy as gp
@@ -17,7 +16,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstractSolver 
 
 class SPASTWeakSolver(SPASTAbstractSolver):
     def __init__(self, filename: str, output_flag=1) -> None:
-        super().__init__(filename, "SPAST_Weak",output_flag)
+        super().__init__(filename, "SPAST_Weak", output_flag)
 
 
     def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
@@ -38,18 +37,18 @@ class SPASTWeakSolver(SPASTAbstractSolver):
 
         for p_j in self._projects:
             total_project_capacity = gp.LinExpr()
-            for student in self._students:
-                if p_j in self._students[student][1]:
-                    total_project_capacity += self._students[student][1][p_j]
+            for s_i in self._students:
+                if p_j in self._students[s_i][1]:
+                    total_project_capacity += self._students[s_i][1][p_j]
 
             self.J.addConstr(total_project_capacity <= self._projects[p_j][0], f"Total capacity constraint for {p_j}")
 
         for l_k in self._lecturers:
             total_lecturer_capacity = gp.LinExpr()
-            for student in self._students:
-                for project in self._students[student][1]:
-                    if l_k == self._projects[project][1]:
-                        total_lecturer_capacity += self._students[student][1][project]
+            for s_i in self._students:
+                for p_j in self._students[s_i][1]:
+                    if l_k == self._projects[p_j][1]:
+                        total_lecturer_capacity += self._students[s_i][1][p_j]
 
             self.J.addConstr(total_lecturer_capacity <= self._lecturers[l_k][0], f"Total capacity constraint for {l_k}")
 
@@ -113,7 +112,7 @@ class SPASTWeakSolver(SPASTAbstractSolver):
 if __name__ == "__main__":
     s = SPASTIG_Random(
         num_students=6,
-        lower_bound=4,
+        lower_bound=1,
         upper_bound=4,
         num_projects=4,
         num_lecturers=2
