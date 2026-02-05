@@ -34,10 +34,11 @@ class SPASTStrongSolver(SPASTAbstractSolver):
 
         for student in self._students:
             sum_student_variables = gp.LinExpr()
-            for project in self._students[student][1]:
+            for project in self._projects:
                 xij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{student} is assigned {project}")
                 self._students[student][1][project] = xij
-                sum_student_variables += xij
+                if project in self._students[student][1]:
+                    sum_student_variables += xij
 
             # CONSTRAINT: student can be assigned to at most one project
             self.J.addConstr(sum_student_variables <= 1, f"Constraint (4.5) for {student}")
@@ -54,7 +55,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         for lecturer in self._lecturers:
             total_lecturer_capacity = gp.LinExpr()
             for student in self._students:
-                for project in self._students[student][1]:
+                for project in self._projects:
                     if lecturer == self._projects[project][1]:
                         total_lecturer_capacity += self._students[student][1][project]
 
@@ -91,8 +92,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
             if student_entity.isTie:
                 projected_tie = [s for s in student_entity if p_j in self._students[s][1]]
                 if len(projected_tie) > 1:
-                    new_EPI = EPI(tuple(projected_tie))
-                    Lkj.append(new_EPI)
+                    Lkj.append(EPI(tuple(projected_tie)))
                 elif len(projected_tie) == 1:
                     Lkj.append(projected_tie[0])
             else:
@@ -144,8 +144,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         """
         project_occupancy = gp.LinExpr()
         for student in self._students:
-            if project in self._students[student][1]:
-                project_occupancy += self._students[student][1][project]
+            project_occupancy += self._students[student][1][project]
 
         return project_occupancy
 
@@ -156,10 +155,9 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         sum_{i=1}^{|S|} sum_{p_j in P_k} x_{ij}
         """
         lecturer_occupancy = gp.LinExpr()
-        for project in self._P_k(lecturer):
-            for student in self._students:
-                if project in self._students[student][1]:
-                    lecturer_occupancy += self._students[student][1][project]
+        for student in self._students:
+            for project in self._P_k(lecturer):
+                lecturer_occupancy += self._students[student][1][project]
 
         return lecturer_occupancy
 
@@ -220,8 +218,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
 
         for student in D_ik:
             for project in self._P_k(l_k):
-                if project in self._students[student][1]:
-                    lecturer_preferred_occupancy += self._students[student][1][project]
+                lecturer_preferred_occupancy += self._students[student][1][project]
 
         # CONSTRAINT: if s_i in M(l_k) or l_k prefers s_i to a worst student in M(l_k)
         # or l_k is indifferent between them, delta_{ik} = 1
@@ -253,8 +250,8 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         project_occupancy = self._get_project_occupancy(p_j)
 
         project_preferred_occupancy = gp.LinExpr()
-        T_ijk = self._get_outranked_entities(self._L_k_j(l_k, p_j), s_i, strict=True)
-        for student in T_ijk:
+        T_ij = self._get_outranked_entities(self._L_k_j(l_k, p_j), s_i, strict=True)
+        for student in T_ij:
             project_preferred_occupancy += self._students[student][1][p_j]
 
         # CONSTRAINT: if l_k prefers s_i to a worst student in M(p_j)
@@ -265,9 +262,8 @@ class SPASTStrongSolver(SPASTAbstractSolver):
 
     def _omega(self, s_i, l_k):
         omega_ik = gp.LinExpr()
-        for project in self._P_k(l_k):
-            if project in self._students[s_i][1]:
-                omega_ik += self._students[s_i][1][project]
+        for p_j in self._P_k(l_k):
+            omega_ik += self._students[s_i][1][p_j]
 
         return omega_ik
 
@@ -286,8 +282,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         D_star_ik = self._get_outranked_entities(self._lecturers[l_k][1], s_i)
         for student in D_star_ik:
             for project in self._P_k(l_k):
-                if project in self._students[student][1]:
-                    lecturer_preferred_occupancy += self._students[student][1][project]
+                lecturer_preferred_occupancy += self._students[student][1][project]
 
         # CONSTRAINT: if s_i in M(l_k) or l_k prefers s_i to a worst student in M(l_k), mu_{ik} = 1
         self.J.addConstr(d_k * mu_ik >= omega_ik + lecturer_occupancy - lecturer_preferred_occupancy, f"Constraint (5.15) for {s_i} {l_k}")
@@ -344,9 +339,10 @@ class SPASTStrongSolver(SPASTAbstractSolver):
 
     def _objective_function(self) -> None:
         all_xij = gp.LinExpr()
-        for student in self._students:
-            for x_ij in self._students[student][1].values():
-                    all_xij += x_ij
+        for s_i in self._students:
+            for p_j in self._students[s_i][1]:
+                    if any(p_j in tie for tie in self._students[s_i][0]):
+                        all_xij += self._students[s_i][1][p_j]
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
 
@@ -361,11 +357,11 @@ class SPASTStrongSolver(SPASTAbstractSolver):
 
 if __name__ == "__main__":
     s = SPASTIG_Random(
-        num_students=5,
-        lower_bound=3,
-        upper_bound=3,
-        num_projects=3,
-        num_lecturers=1
+        num_students=6,
+        lower_bound=1,
+        upper_bound=4,
+        num_projects=4,
+        num_lecturers=2
     )
     runs = 100
 
