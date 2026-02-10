@@ -18,10 +18,6 @@ class SPASTWeakSolver(SPASTAbstractSolver):
         super().__init__(filename, "SPAST_Weak", output_flag)
 
 
-    def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
-        return any(element in tie for tie in entity_preference_list)
-
-
     def _matching_constraints(self) -> None:
         for s_i in self._students:
             sum_student_variables = gp.LinExpr()

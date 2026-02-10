@@ -2,13 +2,11 @@
 Using Gurobi Integer Programming solver to solve the SPA-ST problem.
 """
 
-from collections import defaultdict
 from tqdm import tqdm
 
 import gurobipy as gp
 from gurobipy import GRB
 
-from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel import FileReaderIPModel as FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
@@ -63,7 +61,7 @@ class SPASTStrongSolver(SPASTAbstractSolver):
             self.J.addConstr(total_lecturer_capacity <= self._lecturers[lecturer][0], f"Total capacity constraint (4.7) for {lecturer}")
 
 
-    def _get_equal_entities(self, preference_list, entity) -> list:
+    def _get_equal_entities(self, preference_list, entity):
         """
         Get entities that are equal to entity in preference list
         """
@@ -311,30 +309,32 @@ class SPASTStrongSolver(SPASTAbstractSolver):
     def _blocking_pair_constraints(self) -> None:
         for s_i in self._students:
             for p_j in self._students[s_i][1]:
-                l_k = self._projects[p_j][1]
+                if self._entity_list_ranks_element(self._students[s_i][0], p_j):
+                    l_k = self._projects[p_j][1]
 
-                theta_ij = self._theta(s_i, p_j)
-                theta_star_ij = self._theta_star(s_i, p_j)
-                alpha_j = self._alpha(p_j)
-                beta_k = self._beta(l_k)
+                    theta_ij = self._theta(s_i, p_j)
+                    theta_star_ij = self._theta_star(s_i, p_j)
 
-                eta_k = self._eta(l_k)
-                delta_ik = self._delta(s_i, l_k)
+                    alpha_j = self._alpha(p_j)
+                    beta_k = self._beta(l_k)
 
-                gamma_j = self._gamma(p_j)
-                lambda_ijk = self._lambda(s_i, p_j, l_k)
+                    eta_k = self._eta(l_k)
+                    delta_ik = self._delta(s_i, l_k)
 
-                mu_ik = self._mu(s_i, l_k)
+                    gamma_j = self._gamma(p_j)
+                    lambda_ijk = self._lambda(s_i, p_j, l_k)
 
-                tau_ijk = self._tau(s_i, p_j, l_k)
+                    mu_ik = self._mu(s_i, l_k)
 
-                self.J.addConstr(theta_ij + alpha_j + beta_k <= 2, f"Blocking pair 1i for {s_i} and {p_j} (5.11)")
-                self.J.addConstr(theta_ij + alpha_j + eta_k + delta_ik <= 3, f"Blocking pair 1ii for {s_i} and {p_j} (5.12)")
-                self.J.addConstr(theta_ij + gamma_j + lambda_ijk <= 2, f"Blocking pair 1iii for {s_i} and {p_j} (5.13)")
+                    tau_ijk = self._tau(s_i, p_j, l_k)
 
-                self.J.addConstr(theta_star_ij + alpha_j + beta_k <= 2, f"Blocking pair 2i for {s_i} and {p_j} (5.14)")
-                self.J.addConstr(theta_star_ij + alpha_j + eta_k + mu_ik <= 3, f"Blocking pair 2ii for {s_i} and {p_j} (5.16)")
-                self.J.addConstr(theta_star_ij + gamma_j + tau_ijk <= 2, f"Blocking pair 2iii for {s_i} and {p_j} (5.18)")
+                    self.J.addConstr(theta_ij + alpha_j + beta_k <= 2, f"Blocking pair 1i for {s_i} and {p_j} (5.11)")
+                    self.J.addConstr(theta_ij + alpha_j + eta_k + delta_ik <= 3, f"Blocking pair 1ii for {s_i} and {p_j} (5.12)")
+                    self.J.addConstr(theta_ij + gamma_j + lambda_ijk <= 2, f"Blocking pair 1iii for {s_i} and {p_j} (5.13)")
+
+                    self.J.addConstr(theta_star_ij + alpha_j + beta_k <= 2, f"Blocking pair 2i for {s_i} and {p_j} (5.14)")
+                    self.J.addConstr(theta_star_ij + alpha_j + eta_k + mu_ik <= 3, f"Blocking pair 2ii for {s_i} and {p_j} (5.16)")
+                    self.J.addConstr(theta_star_ij + gamma_j + tau_ijk <= 2, f"Blocking pair 2iii for {s_i} and {p_j} (5.18)")
 
 
     def _objective_function(self) -> None:

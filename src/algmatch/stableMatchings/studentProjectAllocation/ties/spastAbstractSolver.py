@@ -47,6 +47,10 @@ class SPASTAbstractSolver(ABC):
         return outranked_projects
 
 
+    def _entity_list_ranks_element(self, entity_preference_list, element) -> bool:
+        return any(element in tie for tie in entity_preference_list)
+
+
     @abstractmethod
     def _objective_function(self) -> None:
         raise NotImplementedError("Objective function not implemented")
