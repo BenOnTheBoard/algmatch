@@ -8,7 +8,6 @@ from tqdm import tqdm
 import gurobipy as gp
 from gurobipy import GRB
 
-from algmatch.stableMatchings.studentProjectAllocation.ties.fileReaderIPModel import FileReaderIPModel as FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstractSolver import SPASTAbstractSolver
@@ -61,11 +60,12 @@ class SPASTWeakSolver(SPASTAbstractSolver):
                 alpha_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"alpha_{s_i}{p_j}")
                 beta_ij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"beta_{s_i}{p_j}")
 
-                outranked_sum = gp.LinExpr()
-                for p_r in self._get_outranked_entities(self._students[s_i][0], p_j):
-                    outranked_sum += self._students[s_i][1][p_r]
+                if self._entity_list_ranks_element(self._students[s_i][0], p_j):
+                    outranked_sum = gp.LinExpr()
+                    for p_r in self._get_outranked_entities(self._students[s_i][0], p_j):
+                        outranked_sum += self._students[s_i][1][p_r]
 
-                self.J.addConstr(1 - outranked_sum <= alpha_ij + beta_ij, f"Constraint 5. for {s_i}, {p_j}")
+                    self.J.addConstr(1 - outranked_sum <= alpha_ij + beta_ij, f"Constraint 5. for {s_i}, {p_j}")
 
                 T_ik = set(self._get_outranked_entities(self._lecturers[l_k][1], s_i))
                 T_ik.discard(s_i)
