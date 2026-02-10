@@ -26,35 +26,32 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         sum_{i=1}^{|S|} sum_{p_j in P_k} x_{ij} <= d_k for all k in {1, 2, ..., |L|} # lecturer does not exceed capacity
         """
 
-        for student in self._students:
+        for s_i in self._students:
             sum_student_variables = gp.LinExpr()
-            for project in self._projects:
-                xij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{student} is assigned {project}")
-                self._students[student][1][project] = xij
-                if project in self._students[student][1]:
-                    sum_student_variables += xij
+            for p_j in self._students[s_i][1]:
+                xij = self.J.addVar(lb=0.0, ub=1.0, obj=0.0, vtype=GRB.BINARY, name=f"{s_i} is assigned {p_j}")
+                self._students[s_i][1][p_j] = xij
+                sum_student_variables += xij
+                if not self._entity_list_ranks_element(self._students[s_i][0], p_j):
+                    self.J.addConstr(self._students[s_i][1][p_j] <= 0, f"Constraint 1. for {s_i}, {p_j}")
 
-            # CONSTRAINT: student can be assigned to at most one project
-            self.J.addConstr(sum_student_variables <= 1, f"Constraint (4.5) for {student}")
+            self.J.addConstr(sum_student_variables <= 1, f"Single assignment constraint for {s_i}")
 
-        for project in self._projects:
+        for p_j in self._projects:
             total_project_capacity = gp.LinExpr()
-            for student in self._students:
-                if project in self._students[student][1]:
-                    total_project_capacity += self._students[student][1][project]
+            for s_i in self._students:
+                total_project_capacity += self._students[s_i][1][p_j]
 
-            # CONSTRAINT: project does not exceed capacity
-            self.J.addConstr(total_project_capacity <= self._projects[project][0], f"Total capacity constraint (4.6) for {project}")
+            self.J.addConstr(total_project_capacity <= self._projects[p_j][0], f"Total capacity constraint for {p_j}")
 
-        for lecturer in self._lecturers:
+        for l_k in self._lecturers:
             total_lecturer_capacity = gp.LinExpr()
-            for student in self._students:
-                for project in self._projects:
-                    if lecturer == self._projects[project][1]:
-                        total_lecturer_capacity += self._students[student][1][project]
+            for s_i in self._students:
+                for p_j in self._students[s_i][1]:
+                    if l_k == self._projects[p_j][1]:
+                        total_lecturer_capacity += self._students[s_i][1][p_j]
 
-            # CONSTRAINT: lecturer does not exceed capacity
-            self.J.addConstr(total_lecturer_capacity <= self._lecturers[lecturer][0], f"Total capacity constraint (4.7) for {lecturer}")
+            self.J.addConstr(total_lecturer_capacity <= self._lecturers[l_k][0], f"Total capacity constraint for {l_k}")
 
 
     def _get_equal_entities(self, preference_list, entity):
