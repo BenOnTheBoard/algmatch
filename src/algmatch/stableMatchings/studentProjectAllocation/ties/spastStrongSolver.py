@@ -2,14 +2,10 @@
 Using Gurobi Integer Programming solver to solve the SPA-ST problem.
 """
 
-from tqdm import tqdm
-
 import gurobipy as gp
 from gurobipy import GRB
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.entityPreferenceInstance import EntityPreferenceInstance as EPI
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastBruteforcer import SPASTBruteforcer as Brute
-from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_Random
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstractSolver import SPASTAbstractSolver
 
 
@@ -353,41 +349,3 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         self._objective_function()
 
         self.J.optimize()
-
-
-if __name__ == "__main__":
-    s = SPASTIG_Random(
-        num_students=6,
-        lower_bound=1,
-        upper_bound=4,
-        num_projects=4,
-        num_lecturers=2
-    )
-    runs = 100
-
-    results = {"right":0, "wrong":0}
-
-    for _ in tqdm(range(runs)):
-        s.generate_instance()
-        s.write_instance_to_file('instance.txt')
-
-        G = SPASTStrongSolver("instance.txt", output_flag=0)
-        G.solve()
-        G_answer = G.assignments_as_dict()
-
-        B = Brute(filename="instance.txt", stability_type="strong")
-        B.choose()
-        answer_list = B.get_ssm_list()
-
-        if not answer_list and G_answer is None:
-            results["right"] += 1
-        elif G_answer in answer_list:
-            results["right"] += 1
-        else:
-            results["wrong"] += 1
-
-    print(f"""
-          Model Test Results:
-            Right: {results["right"]}, {100*results["right"]/runs}%
-            Wrong: {results["wrong"]}, {100*results["wrong"]/runs}%
-    """)
