@@ -39,7 +39,10 @@ def test(Solver, stability_type):
         answer_list = B.get_ssm_list()
 
         if G_answer is None:
-            results["wrong"] += 1
+            if not answer_list:
+                results["right"] += 1
+            else:
+                results["wrong"] += 1
         elif G_answer in answer_list:
             results["right"] += 1
             if matching_size(G_answer) == max(map(matching_size, answer_list)):
