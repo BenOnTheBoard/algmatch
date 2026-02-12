@@ -76,13 +76,13 @@ Results:
     Both exist: {results["both_exist"]}
     Neither exist: {results["neither_exist"]}
 
-{results["both_exist"]},{results["neither_exist"]},{results["super_exists"]},{results["strong_exists"]}""")
+{results["both_exist"]},{results["super_exists"]},{results["strong_exists"]},{results["neither_exist"]}""")
 
 
 def run_instance(n1: int, sd: float, ld: float):
     sd, ld = round(sd, 2), round(ld, 2)
     run_experiment(
-        n1, n1 // 2, sd, ld, 1
+        n1, n1 // 2, sd, ld, 100
     )
 
 
