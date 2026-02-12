@@ -64,7 +64,7 @@ def main():
     for sd in tqdm(np.arange(0, 1, 0.1), position=0, leave=False, desc="sd"):
         for ld in tqdm(np.arange(0, 1, 0.1), position=1, leave=False, desc="ld"):
             times: list[tuple[float, int, float, int]] = []
-            for _ in tqdm(range(ITERS), position=2, leave=False, desc="it"):
+            for i in tqdm(range(ITERS), position=2, leave=False, desc="it"):
                 sd, ld = round(sd, 2), round(ld, 2)
                 times.append(
                     compare_matching_sizes(
@@ -72,11 +72,11 @@ def main():
                         sd,
                         ld,
                         NUM_STUDENTS // 2,
-                        CLUSTER_DIR + "data/instance_{int(sd*100)}_{int(ld*100)}_{i}.txt"
+                        CLUSTER_DIR + f"data/instance_{int(sd*100)}_{int(ld*100)}_{i}.txt"
                     )
                 )
 
-            with open(CLUSTER_DIR + "results/instance_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
+            with open(CLUSTER_DIR + f"results/instance_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
                 f.write("Weak Time (ns),Weak Size,Strong Time (ns),Strong Size,Time Difference (ns)\n")
                 f.writelines(f"{weak_time},{weak_size},{strong_time},{strong_size},{weak_time - strong_time}\n" for weak_time, weak_size, strong_time, strong_size in times)
 
