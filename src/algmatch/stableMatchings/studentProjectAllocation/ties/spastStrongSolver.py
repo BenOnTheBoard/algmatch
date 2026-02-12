@@ -334,8 +334,8 @@ class SPASTStrongSolver(SPASTAbstractSolver):
         all_xij = gp.LinExpr()
         for s_i in self._students:
             for p_j in self._students[s_i][1]:
-                    if any(p_j in tie for tie in self._students[s_i][0]):
-                        all_xij += self._students[s_i][1][p_j]
+                if self._entity_list_ranks_element(self._students[s_i][0], p_j):
+                    all_xij += self._students[s_i][1][p_j]
 
         self.J.setObjective(all_xij, GRB.MAXIMIZE)
 

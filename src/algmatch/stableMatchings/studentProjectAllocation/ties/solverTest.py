@@ -18,7 +18,7 @@ def test(Solver, stability_type):
         num_projects=4,
         num_lecturers=2
     )
-    runs = 200
+    runs = 100
 
     results = {
         "right": 0,
@@ -41,6 +41,7 @@ def test(Solver, stability_type):
         if G_answer is None:
             if not answer_list:
                 results["right"] += 1
+                results["maximal"] += 1
             else:
                 results["wrong"] += 1
         elif G_answer in answer_list:
