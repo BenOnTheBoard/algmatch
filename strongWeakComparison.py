@@ -57,7 +57,7 @@ def compare_matching_sizes(
 def main():
     NUM_STUDENTS = 25
     ITERS = 100
-    CLUSTER_DIR="."
+    CLUSTER_DIR="./"
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
     Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
 
