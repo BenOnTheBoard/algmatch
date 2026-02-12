@@ -5,8 +5,11 @@ this module compares the matching sizes of strong and weak solvers for SPAST ins
 import time
 import numpy as np
 from pathlib import Path
-from numpy._core.numeric import False_
 from tqdm import tqdm
+
+from concurrent.futures import ProcessPoolExecutor
+from itertools import product
+import os
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastWeakSolver import SPASTWeakSolver
@@ -15,6 +18,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.r
 
 def time_solver(solver, filename) -> tuple[float, dict[str, str]]:
     s = solver(filename, output_flag=0)
+    s.J.setParam("Threads", 1)
     start = time.perf_counter_ns()
     s.solve()
     time_taken = time.perf_counter_ns() - start
@@ -54,31 +58,37 @@ def compare_matching_sizes(
     )
 
 
-def main():
-    NUM_STUDENTS = 25
-    ITERS = 100
-    CLUSTER_DIR="./"
+NUM_STUDENTS = 25
+ITERS = 100
+CLUSTER_DIR="./"
+
+def run_instance(sd: float, ld: float):
+    times: list[tuple[float, int, float, int]] = []
+    sd, ld = round(sd, 2), round(ld, 2)
+    for i in range(ITERS):
+        times.append(
+            compare_matching_sizes(
+                NUM_STUDENTS,
+                sd,
+                ld,
+                NUM_STUDENTS // 2,
+                CLUSTER_DIR + f"data/instance_{int(sd*100)}_{int(ld*100)}_{i}.txt"
+            )
+        )
+
+    with open(CLUSTER_DIR + f"results/instance_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
+        f.write("Weak Time (ns),Weak Size,Strong Time (ns),Strong Size,Time Difference (ns)\n")
+        for weak_time, weak_size, strong_time, strong_size in times:
+            f.write(f"{weak_time},{weak_size},{strong_time},{strong_size},{weak_time - strong_time}\n")
+
+if __name__ == "__main__":
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
     Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
 
-    for sd in tqdm(np.arange(0, 1, 0.1), position=0, leave=False, desc="sd"):
-        for ld in tqdm(np.arange(0, 1, 0.1), position=1, leave=False, desc="ld"):
-            times: list[tuple[float, int, float, int]] = []
-            for i in tqdm(range(ITERS), position=2, leave=False, desc="it"):
-                sd, ld = round(sd, 2), round(ld, 2)
-                times.append(
-                    compare_matching_sizes(
-                        NUM_STUDENTS,
-                        sd,
-                        ld,
-                        NUM_STUDENTS // 2,
-                        CLUSTER_DIR + f"data/instance_{int(sd*100)}_{int(ld*100)}_{i}.txt"
-                    )
-                )
+    grid = list(product(
+        np.arange(0, 1, 0.1),
+        np.arange(0, 1, 0.1)
+    ))
 
-            with open(CLUSTER_DIR + f"results/instance_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
-                f.write("Weak Time (ns),Weak Size,Strong Time (ns),Strong Size,Time Difference (ns)\n")
-                f.writelines(f"{weak_time},{weak_size},{strong_time},{strong_size},{weak_time - strong_time}\n" for weak_time, weak_size, strong_time, strong_size in times)
-
-if __name__ == "__main__":
-    main()
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
+        for _ in tqdm(pool.map(run_instance, *zip(*grid))): pass
