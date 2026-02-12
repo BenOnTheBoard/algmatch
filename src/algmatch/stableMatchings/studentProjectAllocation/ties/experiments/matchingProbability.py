@@ -2,9 +2,15 @@ from tqdm import tqdm
 from pathlib import Path
 import numpy as np
 
+from concurrent.futures import ProcessPoolExecutor
+from itertools import product
+import os
+
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOptimal import SPASTSuperStudentOptimal
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.random import SPASTIG_Random
+
+CLUSTER_DIR = "./"
 
 
 def run_experiment(
@@ -20,13 +26,13 @@ def run_experiment(
         "both_exist": 0,
         "neither_exist": 0
     }
-    Path("data").mkdir(parents=True, exist_ok=True)
-    Path("results").mkdir(parents=True, exist_ok=True)
+    Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
+    Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
     foldername = f"{num_students}_{pref_list_length}_{int(student_tie_density*100)}_{int(lecturer_tie_density*100)}"
-    Path(f"data/{foldername}").mkdir(parents=True, exist_ok=True)
+    Path(CLUSTER_DIR + f"data/{foldername}").mkdir(parents=True, exist_ok=True)
 
-    for i in tqdm(range(iters)):
-        filename = f"data/{foldername}/instance_{i}.txt"
+    for i in range(iters):
+        filename = CLUSTER_DIR + f"data/{foldername}/instance_{i}.txt"
         generator = SPASTIG_Random(
             num_students=num_students,
             lower_bound=pref_list_length,
@@ -43,6 +49,7 @@ def run_experiment(
         spast_super.run()
 
         spast_strong = SPASTStrongSolver(filename, output_flag=0)
+        spast_strong.J.setParam("Threads", 1)
         spast_strong.solve()
 
         if spast_super.is_stable:
@@ -55,9 +62,8 @@ def run_experiment(
         else:
             results["neither_exist"] += 1
 
-    with open(f"results/{foldername}_results.txt", "w") as f:
-        f.write(f"""
-Iters: {iters}
+    with open(CLUSTER_DIR + f"results/{foldername}_results.txt", "w") as f:
+        f.write(f"""Iters: {iters}
 Params:
     Num students: {num_students}
     Preference list length: {pref_list_length}
@@ -70,19 +76,22 @@ Results:
     Both exist: {results["both_exist"]}
     Neither exist: {results["neither_exist"]}
 
-{results["both_exist"]},{results["neither_exist"]},{results["super_exists"]},{results["strong_exists"]}
-            """)
+{results["both_exist"]},{results["neither_exist"]},{results["super_exists"]},{results["strong_exists"]}""")
 
 
-def main():
-    for n1 in range(100, 1001, 100):
-        for sd in np.arange(0, 1, 0.1):
-            for ld in np.arange(0, 1, 0.1):
-                sd, ld = round(sd, 2), round(ld, 2)
-                run_experiment(
-                    n1, n1 // 2, sd, ld, 10
-                )
+def run_instance(n1: int, sd: float, ld: float):
+    sd, ld = round(sd, 2), round(ld, 2)
+    run_experiment(
+        n1, n1 // 2, sd, ld, 1
+    )
 
 
 if __name__ == "__main__":
-    main()
+    grid = list(product(
+        range(100, 1001, 100),
+        np.arange(0, 1, 0.1),
+        np.arange(0, 1, 0.1)
+    ))
+
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
+        for _ in tqdm(pool.map(run_instance, *zip(*grid))): pass
