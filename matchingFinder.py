@@ -41,6 +41,7 @@ def run_instance(sd: float, ld: float):
         )
 
         with open(CLUSTER_DIR + "matchings/" + filename, "w") as f:
+            f.write(f"filename: {filename}\n")
             f.write("weak solution:\n")
             f.write(str(weak_soln) if weak_soln is not None else "None")
             f.write("\n\nstrong solution:\n")
