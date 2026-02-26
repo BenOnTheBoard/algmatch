@@ -31,6 +31,7 @@ GENERATORS = [
     SPASTIG_Random,
     SPASTIG_ReverseEuclidean,
 ]
+ITERS = 100
 
 
 def combination_generation(*args):
@@ -99,7 +100,7 @@ Results:
 def run_instance(n1: int, sd: float, ld: float, gen: SPASTIG_Abstract):
     sd, ld = round(sd, 2), round(ld, 2)
     run_experiment(
-        n1, n1 // 10, sd, ld, 100, gen
+        n1, n1 // 10, sd, ld, ITERS, gen
     )
 
 
