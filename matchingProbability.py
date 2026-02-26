@@ -26,22 +26,25 @@ def run_experiment(
         "both_exist": 0,
         "neither_exist": 0
     }
-    Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
-    Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
-    foldername = f"{num_students}_{pref_list_length}_{int(student_tie_density*100)}_{int(lecturer_tie_density*100)}"
+    generator = SPASTIG_Random(
+        num_students=num_students,
+        lower_bound=pref_list_length,
+        upper_bound=pref_list_length,
+        num_projects=num_students // 2,
+        num_lecturers=num_students // 5,
+        student_tie_density=student_tie_density,
+        lecturer_tie_density=lecturer_tie_density,
+    )
+
+    foldername = '_'.join([
+        str(num_students), str(pref_list_length),
+        str(int(student_tie_density*100)),
+        str(int(lecturer_tie_density*100))
+    ])
     Path(CLUSTER_DIR + f"data/{foldername}").mkdir(parents=True, exist_ok=True)
 
     for i in range(iters):
         filename = CLUSTER_DIR + f"data/{foldername}/instance_{i}.txt"
-        generator = SPASTIG_Random(
-            num_students=num_students,
-            lower_bound=pref_list_length,
-            upper_bound=pref_list_length,
-            num_projects=num_students // 2,
-            num_lecturers=num_students // 5,
-            student_tie_density=student_tie_density,
-            lecturer_tie_density=lecturer_tie_density,
-        )
         generator.generate_instance()
         generator.write_instance_to_file(filename)
 
@@ -92,6 +95,8 @@ if __name__ == "__main__":
         np.arange(0, 1, 0.1),
         np.arange(0, 1, 0.1)
     ))
+    Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
+    Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
         for _ in tqdm(pool.map(run_instance, *zip(*grid))): pass
