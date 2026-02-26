@@ -10,6 +10,9 @@ from .abstract import AbstractInstanceGenerator
 
 
 class SPASTIG_Random(AbstractInstanceGenerator):
+    def __str__(self) -> str:
+        return "SPASTIG_Random"
+
     def _generate_students(self):
         for student in self._sp:
             length = random.randint(self._li, self._lj) # randomly decide length of preference list

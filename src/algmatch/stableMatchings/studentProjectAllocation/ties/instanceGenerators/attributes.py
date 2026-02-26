@@ -17,5 +17,9 @@ class SPASTIG_Attributes(SPASTIG_Euclidean):
         super().__init__(num_dimensions=num_dimensions, **kwargs)
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_Attributes"
+
+
     def _distance_function(self, points, point):
         return np.dot(points, point)

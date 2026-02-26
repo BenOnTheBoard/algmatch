@@ -19,6 +19,10 @@ class SPASTIG_ExpectationsEuclidean(SPASTIG_Euclidean):
         self._stdev = stdev
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_ExpectationsEuclidean"
+
+
     def sample_all_points(self):
         super().sample_all_points()
 

@@ -19,6 +19,10 @@ class SPASTIG_FameEuclidean(SPASTIG_Euclidean):
         self._max_fame = max_fame
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_FameEuclidean"
+
+
     def _distance_function(self, points, point):
         return super()._distance_function(points, point) - self._fame_values
 

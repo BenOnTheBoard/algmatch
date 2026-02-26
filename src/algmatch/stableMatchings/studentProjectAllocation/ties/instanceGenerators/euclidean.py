@@ -22,6 +22,10 @@ class SPASTIG_Euclidean(AbstractInstanceGenerator):
         self.to_project_string = lambda x: f'p{x+1}'
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_Euclidean"
+
+
     def _sample_points(self, num_points: int):
         return np.random.uniform(0, 1, (num_points, self._num_dimensions))
 

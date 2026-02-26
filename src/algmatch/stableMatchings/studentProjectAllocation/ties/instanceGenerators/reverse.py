@@ -22,6 +22,10 @@ class SPASTIG_ReverseEuclidean(SPASTIG_Euclidean):
         self._prop_l = prop_l
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_ReverseEuclidean"
+
+
     def _get_ordered_list(self, points_list, other_list, idx, prefix, length=None):
         reverse = idx < (len(points_list) * self._prop) // 1
         return super()._get_ordered_list(

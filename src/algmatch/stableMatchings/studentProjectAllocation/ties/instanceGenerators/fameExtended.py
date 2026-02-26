@@ -21,10 +21,14 @@ class SPASTIG_FameEuclideanExtended(SPASTIG_Euclidean):
         self._max_fame_lecturer = max_fame_lecturer
 
 
+    def __str__(self) -> str:
+        return "SPASTIG_FameEuclideanExtended"
+
+
     def _distance_function(self, points, point):
         return super()._distance_function(points, point) - self._fame
 
-    
+
     def _generate_students(self):
         self._fame = self._project_fame_student
         super()._generate_students()
