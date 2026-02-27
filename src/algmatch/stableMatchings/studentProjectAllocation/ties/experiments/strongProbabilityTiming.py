@@ -100,7 +100,7 @@ def run_experiment(
             results["soln_dne"] += 1
 
     with open(CLUSTER_DIR + f"results/{foldername}_results.txt", "w") as f:
-        f.write(f"{results["soln_exi"]},{results["soln_dne"]}\n")
+        f.write(f"{results['soln_exi']},{results['soln_dne']}\n")
         for time in results["times"]:
             f.write(f"{time}\n")
 
