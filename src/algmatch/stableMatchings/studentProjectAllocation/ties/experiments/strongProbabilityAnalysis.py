@@ -22,13 +22,13 @@ Next ITERS lines:
 
 RESULTS_DIR = "./results/"
 ITERS = 25
-OUTPUT_DIR = "./output/"
+OUTPUT_DIR = "./"
 
 SDs = np.arange(0, 0.41, 0.05)
 LDs = np.arange(0, 0.41, 0.05)
 using_combination = lambda x: inspect.isfunction(x)
-get_gen_name = lambda x: "SPASTIG_Combination" if using_combination(x) else str(x)
-filename = lambda n1, sd, ld, gen_method: f"{n1}_{n1 // 10}_{int(sd*100)}_{int(ld*100)}_{get_gen_name(gen_method)}_results.txt"
+get_gen_name = lambda x, g: "SPASTIG_Combination" if using_combination(g) else str(x)
+filename = lambda n1, sd, ld, gen_name: f"{RESULTS_DIR}{n1}_{n1 // 10}_{int(sd*100)}_{int(ld*100)}_{gen_name}_results.txt"
 
 def plot_heatmap(n1):
     for generation_method in GENERATORS + [combination_generation]:
@@ -40,11 +40,12 @@ def plot_heatmap(n1):
             num_projects=50,
             num_lecturers=20
         )
-        generator_name = get_gen_name(generator)
+        generator_name = get_gen_name(generator, generation_method)
+        print(generator_name)
         heatmap = np.zeros((len(SDs), len(LDs)))
         for i, sd in enumerate(SDs):
             for j, ld in enumerate(LDs):
-                with open(filename(n1, sd, ld, generator), "r") as f:
+                with open(filename(n1, sd, ld, generator_name), "r") as f:
                     heatmap[i, j] = float(f.readlines()[0].split(",")[0]) / ITERS
 
         X, Y = np.meshgrid(LDs, SDs)
