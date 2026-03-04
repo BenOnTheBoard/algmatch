@@ -9,9 +9,7 @@ from concurrent.futures import ProcessPoolExecutor
 from itertools import product
 import os
 
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstract import SPASTAbstract
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOptimal import SPASTSuperStudentOptimal
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import (
     SPASTIG_Abstract,
     SPASTIG_Attributes,
@@ -33,7 +31,7 @@ GENERATORS = [
     SPASTIG_Random,
     SPASTIG_ReverseEuclidean,
 ]
-ITERS = 100
+ITERS = 25
 
 
 def combination_generation(*args, **kwargs):
@@ -70,8 +68,8 @@ def run_experiment(
 
     foldername = '_'.join([
         str(num_students), str(pref_list_length),
-        str(int(student_tie_density*100)),
-        str(int(lecturer_tie_density*100)),
+        str(student_tie_density),
+        str(lecturer_tie_density),
         generator_name
     ])
     Path(CLUSTER_DIR + f"data/{foldername}").mkdir(parents=True, exist_ok=True)
@@ -104,18 +102,19 @@ def run_experiment(
         for time in results["times"]:
             f.write(f"{time}\n")
 
+
 def run_instance(n1: int, sd: float, ld: float, gen: SPASTIG_Abstract):
     sd, ld = round(sd, 2), round(ld, 2)
     run_experiment(
-        n1, n1 // 10, sd, ld, ITERS, gen
+        n1, max(5, n1 // 10), sd, ld, ITERS, gen
     )
 
 
 if __name__ == "__main__":
     grid = list(product(
-        range(100, 1001, 100),
-        np.arange(0, 0.41, 0.05),
-        np.arange(0, 0.41, 0.05),
+        range(10, 101, 10),
+        np.arange(0, 0.051, 0.005),
+        np.arange(0, 0.051, 0.005),
         GENERATORS + [combination_generation]
     ))
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
