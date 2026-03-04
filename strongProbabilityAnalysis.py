@@ -8,9 +8,9 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.experiments.strongPr
 )
 
 ALL_GENERATORS = GENERATORS + [combination_generation]
-RESULTS_DIR = "./results/"
+RESULTS_DIR = "/home/varad/Desktop/programming/algmatch/experimentResults/results_200/"
 ITERS = 25
-OUTPUT_DIR = "./"
+OUTPUT_DIR = "./probabilityResults/"
 DUMMY_ARGS = {
     "num_students": 100,
     "lower_bound": 10,
