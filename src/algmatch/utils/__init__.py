@@ -1,13 +1,25 @@
-# === Instance Generators ===
+# === Instance Generation ===
 
-from algmatch.utils.generators.SM.smGenerator import SMGenerator
-from algmatch.utils.generators.SM.smtGenerator import SMTGenerator
+from utils.generators.SM.smGenerator import SMGenerator
+from utils.generators.SM.smtGenerator import SMTGenerator
 
-from algmatch.utils.generators.HR.hrGenerator import HRGenerator
-from algmatch.utils.generators.HR.hrtGenerator import HRTGenerator
+from utils.generators.HR.hrGenerator import HRGenerator
+from utils.generators.HR.hrtGenerator import HRTGenerator
 
-from algmatch.utils.generators.SPAS.spasGenerator import SPASGenerator
-from algmatch.utils.generators.SPAS.spastGenerator import SPASTGenerator
+from utils.generators.SPAS.spasGenerator import SPASGenerator
+from utils.generators.SPAS.spastGenerator import SPASTGenerator
 
-from algmatch.utils.generators.SR.srGenerator import SRGenerator
+from utils.generators.SR.srGenerator import SRGenerator
 
+# === Enumeration ===
+
+from utils.enumerators.SM.smEnumerator import SMEnumerator
+from utils.enumerators.SM.smtEnumerator import SMTEnumerator
+
+from utils.enumerators.HR.hrEnumerator import HREnumerator
+from utils.enumerators.HR.hrtEnumerator import HRTEnumerator
+
+from utils.enumerators.SPAS.spasEnumerator import SPASEnumerator
+from utils.enumerators.SPAS.spastEnumerator import SPASTEnumerator
+
+from utils.enumerators.SR.srEnumerator import SREnumerator
