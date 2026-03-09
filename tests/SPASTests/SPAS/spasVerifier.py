@@ -1,8 +1,8 @@
 from algmatch.studentProjectAllocation import StudentProjectAllocation
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from tests.SPASTests.utils.noTies.spasInstanceGenerator import SPASInstanceGenerator
-from tests.SPASTests.utils.noTies.spasEnumerator import SPASEnumerator
+from algmatch.utils.generators.SPAS.spasInstanceGenerator import SPASInstanceGenerator
+from tests.SPASTests.utils.spasEnumerator import SPASEnumerator
 
 
 class SPASVerifier(AbstractVerifier):

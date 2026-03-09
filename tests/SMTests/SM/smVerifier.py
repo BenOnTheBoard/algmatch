@@ -1,8 +1,8 @@
 from algmatch.stableMarriageProblem import StableMarriageProblem
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from tests.SMTests.utils.noTies.smInstanceGenerator import SMInstanceGenerator
-from tests.SMTests.utils.noTies.smEnumerator import SMEnumerator
+from algmatch.utils.generators.SM.smInstanceGenerator import SMInstanceGenerator
+from tests.SMTests.utils.smEnumerator import SMEnumerator
 
 
 class SMVerifier(AbstractVerifier):

@@ -1,6 +1,6 @@
 from random import randint, shuffle
 
-from tests.SPASTests.utils.generic.spasGenericGenerator import SPASGenericGenerator
+from algmatch.utils.generators.SPAS.spasGenericGenerator import SPASGenericGenerator
 
 
 class SPASInstanceGenerator(SPASGenericGenerator):

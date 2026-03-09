@@ -1,4 +1,4 @@
-from tests.abstractTestClasses.genericGeneratorInterface import (
+from algmatch.utils.generators.genericGeneratorInterface import (
     GenericGeneratorInterface,
 )
 

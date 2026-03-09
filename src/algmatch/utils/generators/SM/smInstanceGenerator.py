@@ -1,6 +1,6 @@
 import random
 
-from tests.SMTests.utils.generic.smGenericGenerator import SMGenericGenerator
+from algmatch.utils.generators.SM.smGenericGenerator import SMGenericGenerator
 
 
 class SMInstanceGenerator(SMGenericGenerator):

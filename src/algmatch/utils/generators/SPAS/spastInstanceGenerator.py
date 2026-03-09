@@ -1,7 +1,7 @@
 from random import randint, shuffle
 
-from tests.abstractTestClasses.abstractTieGenerator import AbstractTieGenerator
-from tests.SPASTests.utils.generic.spasGenericGenerator import SPASGenericGenerator
+from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
+from algmatch.utils.generators.SPAS.spasGenericGenerator import SPASGenericGenerator
 
 
 class SPASTInstanceGenerator(SPASGenericGenerator, AbstractTieGenerator):

@@ -1,7 +1,7 @@
 from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import (
     SPAAbstract,
 )
-from tests.SPASTests.utils.generic.spasGenericEnumerator import SPASGenericEnumerator
+from tests.SPASTests.utils.spasGenericEnumerator import SPASGenericEnumerator
 
 
 class SPASEnumerator(SPAAbstract, SPASGenericEnumerator):

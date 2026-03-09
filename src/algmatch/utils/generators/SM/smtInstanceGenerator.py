@@ -1,7 +1,7 @@
 import random
 
-from tests.abstractTestClasses.abstractTieGenerator import AbstractTieGenerator
-from tests.SMTests.utils.generic.smGenericGenerator import SMGenericGenerator
+from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
+from algmatch.utils.generators.SM.smGenericGenerator import SMGenericGenerator
 
 
 class SMTInstanceGenerator(SMGenericGenerator, AbstractTieGenerator):

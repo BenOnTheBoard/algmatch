@@ -1,8 +1,8 @@
 from algmatch.stableMarriageProblemWithTies import StableMarriageProblemWithTies
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from tests.SMTests.utils.ties.smtInstanceGenerator import SMTInstanceGenerator
-from tests.SMTests.utils.ties.smtEnumerator import SMTEnumerator
+from algmatch.utils.generators.SM.smtInstanceGenerator import SMTInstanceGenerator
+from tests.SMTests.utils.smtEnumerator import SMTEnumerator
 
 
 class SMTStrongVerifier(AbstractVerifier):

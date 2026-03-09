@@ -1,4 +1,4 @@
-from tests.SMTests.utils.generic.smGenericBruteForcer import SMGenericBruteForcer
+from tests.SMTests.utils.smGenericBruteForcer import SMGenericBruteForcer
 
 
 class SMGenericEnumerator(SMGenericBruteForcer):

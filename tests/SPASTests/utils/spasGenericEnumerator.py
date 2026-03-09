@@ -1,4 +1,4 @@
-from tests.SPASTests.utils.generic.spasGenericBruteForcer import SPASGenericBruteForcer
+from tests.SPASTests.utils.spasGenericBruteForcer import SPASGenericBruteForcer
 
 
 class SPASGenericEnumerator(SPASGenericBruteForcer):

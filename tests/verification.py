@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from tests.SMTests.SM.smMultiVerifier import SMMultiVerifier as SM_MV
 from tests.HRTests.HR.hrMultiVerifier import HRMultiVerifier as HR_MV
-from tests.SPASTests.spasMultiVerifier import SPASMultiVerifier as SPAS_MV
+from tests.SPASTests.SPAS.spasMultiVerifier import SPASMultiVerifier as SPAS_MV
 
 from tests.SMTests.SMTSuper.smtSuperMultiVerifier import SMTSuperMultiVerifier as SMT_MV
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
         SM_MV: (5, 5, 0, 5, 10_000),
         # SMT_MV: (5, 5, 0, 5, 10_000),
         HR_MV: (5, 3, 0, 3, 10_000),
-        #SPAS_MV: (5, 0, 3, 10_000),
+        SPAS_MV: (5, 0, 3, 10_000),
     }
     # ===========================#
 

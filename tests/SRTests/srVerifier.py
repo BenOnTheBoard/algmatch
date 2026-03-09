@@ -1,7 +1,7 @@
 from algmatch.stableRoommatesProblem import StableRoommatesProblem
 
-from tests.SRTests.utils.srInstanceGenerator import SRInstanceGenerator
-from tests.SRTests.utils.srEnumerator import SREnumerator
+from algmatch.utils.generators.SR.srInstanceGenerator import SRInstanceGenerator
+from tests.SRTests.srEnumerator import SREnumerator
 
 
 class SRVerifier:

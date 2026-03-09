@@ -1,7 +1,7 @@
 import random
 
-from tests.abstractTestClasses.abstractTieGenerator import AbstractTieGenerator
-from tests.HRTests.utils.generic.hrGenericGenerator import HRGenericGenerator
+from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
+from algmatch.utils.generators.HR.hrGenericGenerator import HRGenericGenerator
 
 
 class HRTInstanceGenerator(HRGenericGenerator, AbstractTieGenerator):

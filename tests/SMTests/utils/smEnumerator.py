@@ -1,5 +1,5 @@
 from algmatch.stableMatchings.stableMarriageProblem.noTies.smAbstract import SMAbstract
-from tests.SMTests.utils.generic.smGenericEnumerator import SMGenericEnumerator
+from tests.SMTests.utils.smGenericEnumerator import SMGenericEnumerator
 
 
 class SMEnumerator(SMAbstract, SMGenericEnumerator):

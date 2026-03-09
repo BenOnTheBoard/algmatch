@@ -1,6 +1,6 @@
 import random
 
-from tests.HRTests.utils.generic.hrGenericGenerator import HRGenericGenerator
+from algmatch.utils.generators.HR.hrGenericGenerator import HRGenericGenerator
 
 
 class HRInstanceGenerator(HRGenericGenerator):
