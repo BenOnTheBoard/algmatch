@@ -1,8 +1,7 @@
-from algmatch.hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies
+from algmatch import HRT
+from algmatch.utils import HRTEnumerator, HRTGenerator
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from algmatch.utils.generators.HR.hrtGenerator import HRTGenerator
-from algmatch.utils.enumerators.HR.hrtEnumerator import HRTEnumerator
 
 
 class HRTSuperVerifier(AbstractVerifier):
@@ -24,7 +23,7 @@ class HRTSuperVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            HospitalResidentsProblemWithTies,
+            HRT,
             ("residents", "hospitals"),
             HRTGenerator,
             generator_args,

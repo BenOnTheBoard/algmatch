@@ -1,8 +1,7 @@
-from algmatch.studentProjectAllocation import StudentProjectAllocation
+from algmatch import SPAS
+from algmatch.utils import SPASEnumerator, SPASGenerator
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from algmatch.utils.generators.SPAS.spasGenerator import SPASGenerator
-from algmatch.utils.enumerators.SPAS.spasEnumerator import SPASEnumerator
 
 
 class SPASVerifier(AbstractVerifier):
@@ -34,7 +33,7 @@ class SPASVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            StudentProjectAllocation,
+            SPAS,
             ("students", "lecturers"),
             SPASGenerator,
             generator_args,

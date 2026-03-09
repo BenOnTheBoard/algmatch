@@ -1,8 +1,7 @@
-from algmatch.hospitalResidentsProblem import HospitalResidentsProblem
+from algmatch import HR
+from algmatch.utils import HREnumerator, HRGenerator
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from algmatch.utils.generators.HR.hrGenerator import HRGenerator
-from algmatch.utils.enumerators.HR.hrEnumerator import HREnumerator
 
 
 class HRVerifier(AbstractVerifier):
@@ -24,7 +23,7 @@ class HRVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            HospitalResidentsProblem,
+            HR,
             ("residents", "hospitals"),
             HRGenerator,
             generator_args,
