@@ -21,6 +21,9 @@ from .stableMarriageProblemWithTies import StableMarriageProblemWithTies as SMT
 from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies
 from .hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies as HRT
 
+from .studentProjectAllocationWithTies import StudentProjectAllocationWithTies
+from .studentProjectAllocationWithTies import StudentProjectAllocationWithTies as SPAST
+
 # === SPA-P ===
 
 from .studentProjectAllocationProjects import StudentProjectAllocationProjectsSingle
