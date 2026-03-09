@@ -5,7 +5,7 @@ from tqdm import tqdm
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastSolver import (
     GurobiSPAST,
 )
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastInstanceGenerator import (
+from algmatch.stableMatchings.studentProjectAllocation.ties.spastGenerator import (
     SPASTGen,
 )
 

@@ -1,14 +1,8 @@
 from statistics import stdev, mean
 from time import perf_counter_ns
 
-from algmatch.hospitalResidentsProblem import HospitalResidentsProblem
-from tests.HRTests.utils.instanceGenerator import HRInstanceGenerator
-
-from algmatch.stableMarriageProblem import StableMarriageProblem
-from tests.SMTests.utils.instanceGenerator import SMInstanceGenerator
-
-from algmatch.studentProjectAllocation import StudentProjectAllocation
-from tests.SPASTests.utils.instanceGenerator import SPAInstanceGenerator
+from algmatch import SM, HR, SPAS
+from algmatch.utils import SMGenerator, HRGenerator, SPASGenerator
 
 
 def show_results(data):
@@ -72,28 +66,28 @@ def benchmark(IGData, IG, reps, solver, optimised_sides):
 def main():
     print("### Timing HR:")
     benchmark(
-        [75, 75, 75, 75],
-        HRInstanceGenerator,
+        [25, 75, 75, 75],
+        HRGenerator,
         1_000,
-        HospitalResidentsProblem,
+        HR,
         ["residents", "hospitals"],
     )
 
     print("### Timing SM:")
     benchmark(
         [75, 75, 75, 75],
-        SMInstanceGenerator,
+        SMGenerator,
         1_000,
-        StableMarriageProblem,
+        SM,
         ["men", "women"],
     )
 
     print("### Timing SPA:")
     benchmark(
         [50, 20, 25],
-        SPAInstanceGenerator,
+        SPASGenerator,
         1_000,
-        StudentProjectAllocation,
+        SPAS,
         ["students", "lecturers"],
     )
 

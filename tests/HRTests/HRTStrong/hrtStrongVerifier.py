@@ -1,8 +1,7 @@
-from algmatch.hospitalResidentsProblemWithTies import HospitalResidentsProblemWithTies
+from algmatch import HRT
+from algmatch.utils import HRTEnumerator, HRTGenerator
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from tests.HRTests.utils.ties.hrtInstanceGenerator import HRTInstanceGenerator
-from tests.HRTests.utils.ties.hrtEnumerator import HRTEnumerator
 
 
 class HRTStrongVerifier(AbstractVerifier):
@@ -24,9 +23,8 @@ class HRTStrongVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            HospitalResidentsProblemWithTies,
-            ("residents", "hospitals"),
-            HRTInstanceGenerator,
+            HRT("residents", "hospitals"),
+            HRTGenerator,
             generator_args,
             HRTEnumerator,
             "strong",

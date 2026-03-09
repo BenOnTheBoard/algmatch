@@ -1,8 +1,7 @@
-from algmatch.stableMarriageProblemWithTies import StableMarriageProblemWithTies
+from algmatch import SMT
+from algmatch.utils import SMTGenerator, SMTEnumerator
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from tests.SMTests.utils.ties.smtInstanceGenerator import SMTInstanceGenerator
-from tests.SMTests.utils.ties.smtEnumerator import SMTEnumerator
 
 
 class SMTStrongVerifier(AbstractVerifier):
@@ -24,9 +23,9 @@ class SMTStrongVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            StableMarriageProblemWithTies,
+            SMT,
             ("men", "women"),
-            SMTInstanceGenerator,
+            SMTGenerator,
             generator_args,
             SMTEnumerator,
             "strong",
