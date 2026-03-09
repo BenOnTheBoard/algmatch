@@ -2,7 +2,7 @@ from algmatch.studentProjectAllocationWithTies import StudentProjectAllocationWi
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
 from algmatch.utils.generators.SPAS.spastGenerator import SPASTGenerator
-from tests.SPASTests.utils.spastEnumerator import SPASTEnumerator
+from algmatch.utils.enumerators.SPAS.spastEnumerator import SPASTEnumerator
 
 
 class SPASTSuperVerifier(AbstractVerifier):

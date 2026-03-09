@@ -1,4 +1,4 @@
-from tests.HRTests.utils.hrGenericBruteForcer import HRGenericBruteForcer
+from algmatch.utils.enumerators.HR.hrGenericBruteForcer import HRGenericBruteForcer
 
 
 class HRGenericEnumerator(HRGenericBruteForcer):

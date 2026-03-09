@@ -1,7 +1,7 @@
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
     HRTAbstract,
 )
-from tests.HRTests.utils.hrGenericEnumerator import HRGenericEnumerator
+from algmatch.utils.enumerators.HR.hrGenericEnumerator import HRGenericEnumerator
 
 
 class HRTEnumerator(HRTAbstract, HRGenericEnumerator):

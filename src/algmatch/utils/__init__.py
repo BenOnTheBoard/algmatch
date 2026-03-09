@@ -10,3 +10,4 @@ from algmatch.utils.generators.SPAS.spasGenerator import SPASGenerator
 from algmatch.utils.generators.SPAS.spastGenerator import SPASTGenerator
 
 from algmatch.utils.generators.SR.srGenerator import SRGenerator
+

@@ -1,4 +1,4 @@
-from tests.SMTests.utils.smGenericBruteForcer import SMGenericBruteForcer
+from algmatch.utils.enumerators.SM.smGenericBruteForcer import SMGenericBruteForcer
 
 
 class SMGenericEnumerator(SMGenericBruteForcer):

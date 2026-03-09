@@ -2,7 +2,7 @@ from algmatch.hospitalResidentsProblem import HospitalResidentsProblem
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
 from algmatch.utils.generators.HR.hrGenerator import HRGenerator
-from tests.HRTests.utils.hrEnumerator import HREnumerator
+from algmatch.utils.enumerators.HR.hrEnumerator import HREnumerator
 
 
 class HRVerifier(AbstractVerifier):
