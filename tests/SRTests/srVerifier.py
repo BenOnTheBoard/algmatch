@@ -1,6 +1,6 @@
 from algmatch.stableRoommatesProblem import StableRoommatesProblem
 
-from algmatch.utils.generators.SR.srInstanceGenerator import SRInstanceGenerator
+from algmatch.utils.generators.SR.srGenerator import SRGenerator
 from tests.SRTests.srEnumerator import SREnumerator
 
 
@@ -9,7 +9,7 @@ class SRVerifier:
         self._total_roommates = no_roommates
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
-        self.gen = SRInstanceGenerator(no_roommates, lower_bound, upper_bound)
+        self.gen = SRGenerator(no_roommates, lower_bound, upper_bound)
         self.current_instance = {}
 
     def generate_instance(self):

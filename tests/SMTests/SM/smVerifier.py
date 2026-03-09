@@ -1,7 +1,7 @@
 from algmatch.stableMarriageProblem import StableMarriageProblem
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from algmatch.utils.generators.SM.smInstanceGenerator import SMInstanceGenerator
+from algmatch.utils.generators.SM.smGenerator import SMGenerator
 from tests.SMTests.utils.smEnumerator import SMEnumerator
 
 
@@ -26,7 +26,7 @@ class SMVerifier(AbstractVerifier):
             self,
             StableMarriageProblem,
             ("men", "women"),
-            SMInstanceGenerator,
+            SMGenerator,
             generator_args,
             SMEnumerator,
         )

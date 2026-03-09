@@ -1,7 +1,7 @@
 from algmatch.studentProjectAllocationWithTies import StudentProjectAllocationWithTies
 
 from tests.abstractTestClasses.abstractVerifier import AbstractVerifier
-from algmatch.utils.generators.SPAS.spastInstanceGenerator import SPASTInstanceGenerator
+from algmatch.utils.generators.SPAS.spastGenerator import SPASTGenerator
 from tests.SPASTests.utils.spastEnumerator import SPASTEnumerator
 
 
@@ -36,7 +36,7 @@ class SPASTSuperVerifier(AbstractVerifier):
             self,
             StudentProjectAllocationWithTies,
             ("students", "lecturers"),
-            SPASTInstanceGenerator,
+            SPASTGenerator,
             generator_args,
             SPASTEnumerator,
             "super",

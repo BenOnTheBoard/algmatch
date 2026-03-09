@@ -4,7 +4,7 @@ from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
 from algmatch.utils.generators.HR.hrGenericGenerator import HRGenericGenerator
 
 
-class HRTInstanceGenerator(HRGenericGenerator, AbstractTieGenerator):
+class HRTGenerator(HRGenericGenerator, AbstractTieGenerator):
     def __init__(self, residents, hospitals, lower_bound, upper_bound):
         HRGenericGenerator.__init__(
             self, residents, hospitals, lower_bound, upper_bound

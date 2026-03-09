@@ -4,7 +4,7 @@ from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
 from algmatch.utils.generators.SM.smGenericGenerator import SMGenericGenerator
 
 
-class SMTInstanceGenerator(SMGenericGenerator, AbstractTieGenerator):
+class SMTGenerator(SMGenericGenerator, AbstractTieGenerator):
     def __init__(self, men, women, lower_bound, upper_bound):
         SMGenericGenerator.__init__(self, men, women, lower_bound, upper_bound)
         AbstractTieGenerator.__init__(self)

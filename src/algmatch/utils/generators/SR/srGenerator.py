@@ -5,7 +5,7 @@ from algmatch.utils.generators.genericGeneratorInterface import (
 )
 
 
-class SRInstanceGenerator(GenericGeneratorInterface):
+class SRGenerator(GenericGeneratorInterface):
     def __init__(self, no_roommates, lower_bound, upper_bound):
         self.no_roommates = no_roommates
         self.li = lower_bound

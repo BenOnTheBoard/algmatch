@@ -3,7 +3,7 @@ import random
 from algmatch.utils.generators.SM.smGenericGenerator import SMGenericGenerator
 
 
-class SMInstanceGenerator(SMGenericGenerator):
+class SMGenerator(SMGenericGenerator):
     def __init__(self, men, women, lower_bound, upper_bound):
         SMGenericGenerator.__init__(self, men, women, lower_bound, upper_bound)
 

@@ -1,17 +1,25 @@
 from random import randint, shuffle
 
+from algmatch.utils.generators.abstractTieGenerator import AbstractTieGenerator
 from algmatch.utils.generators.SPAS.spasGenericGenerator import SPASGenericGenerator
 
 
-class SPASInstanceGenerator(SPASGenericGenerator):
+class SPASTGenerator(SPASGenericGenerator, AbstractTieGenerator):
     def __init__(self, students, projects, lecturers, lower_bound, upper_bound):
-        super().__init__(students, projects, lecturers, lower_bound, upper_bound)
+        SPASGenericGenerator.__init__(
+            self, students, projects, lecturers, lower_bound, upper_bound
+        )
+        AbstractTieGenerator.__init__(self)
 
     def _generate_students(self):
         for s_list in self.instance["students"].values():
             length = randint(self.li, self.lj)
             shuffle(self.available_projects)
-            s_list.extend(self.available_projects[:length])
+
+            self._generate_tied_list(
+                s_list,
+                self.available_projects[:length],
+            )
 
     def _generate_projects(self):
         projectless_lecturers = {i + 1 for i in range(self.no_lecturers)}
@@ -38,4 +46,8 @@ class SPASInstanceGenerator(SPASGenericGenerator):
             l_bounds = l_capacity_bounds[L]
             l_info["capacity"] = randint(l_bounds["max"], l_bounds["total"])
             shuffle(self.available_students)
-            l_info["preferences"].extend(self.available_students)
+
+            self._generate_tied_list(
+                l_info["preferences"],
+                self.available_students,
+            )

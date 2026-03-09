@@ -3,7 +3,7 @@ import random
 from algmatch.utils.generators.HR.hrGenericGenerator import HRGenericGenerator
 
 
-class HRInstanceGenerator(HRGenericGenerator):
+class HRGenerator(HRGenericGenerator):
     def __init__(self, residents, hospitals, lower_bound, upper_bound):
         super().__init__(residents, hospitals, lower_bound, upper_bound)
 
