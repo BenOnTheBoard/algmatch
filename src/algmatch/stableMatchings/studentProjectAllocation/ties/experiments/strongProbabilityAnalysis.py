@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import inspect
+from pathlib import Path
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.experiments.strongProbabilityTiming import (
     GENERATORS,
@@ -8,9 +9,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.experiments.strongPr
 )
 
 ALL_GENERATORS = GENERATORS + [combination_generation]
-RESULTS_DIR = "/home/varad/Desktop/programming/algmatch/experimentResults/results_200/"
 ITERS = 25
-OUTPUT_DIR = "./probabilityResults/"
 DUMMY_ARGS = {
     "num_students": 100,
     "lower_bound": 10,
@@ -19,21 +18,29 @@ DUMMY_ARGS = {
     "num_lecturers": 20
 }
 
-SDs = np.arange(0, 0.41, 0.05)
-LDs = np.arange(0, 0.41, 0.05)
+SDs = np.arange(0, 0.051, 0.005)
+LDs = np.arange(0, 0.051, 0.005)
 using_combination = lambda x: inspect.isfunction(x)
 get_gen_name = lambda x, g: "SPASTIG_Combination" if using_combination(g) else str(x)
 generator_name = lambda x: get_gen_name(x(**DUMMY_ARGS), x)
 generator_short_name = lambda x: generator_name(x).split("_")[-1]
-filename = lambda n1, sd, ld, gen_name: f"{RESULTS_DIR}{n1}_{n1 // 10}_{int(sd*100)}_{int(ld*100)}_{gen_name}_results.txt"
+filename = lambda n1, sd, ld, gen_name, res_dir: res_dir + "_".join([
+    str(n1),
+    str(max(5, n1 // 10)),
+    str(round(sd, 4)),
+    str(round(ld, 4)),
+    gen_name,
+    "results.txt"
+])
 
 def plot_heatmap(n1):
+    res_dir = f"{ALL_RESULTS_DIR}/results/"
     for gen in ALL_GENERATORS:
         heatmap = np.zeros((len(SDs), len(LDs)))
 
         for i, sd in enumerate(SDs):
             for j, ld in enumerate(LDs):
-                with open(filename(n1, sd, ld, generator_name(gen)), "r") as f:
+                with open(filename(n1, sd, ld, generator_name(gen), res_dir), "r") as f:
                     heatmap[i, j] = float(f.readlines()[0].split(",")[0]) / ITERS
 
         X, Y = np.meshgrid(LDs, SDs)
@@ -56,13 +63,14 @@ def plot_heatmap(n1):
 
 
 def plot_avg_times(n1):
+    res_dir = f"{ALL_RESULTS_DIR}/results/"
     for gen in ALL_GENERATORS:
         avg_times = np.zeros((len(SDs), len(LDs)))
         highest = -1
 
         for i, sd in enumerate(SDs):
             for j, ld in enumerate(LDs):
-                with open(filename(n1, sd, ld, generator_name(gen)), "r") as f:
+                with open(filename(n1, sd, ld, generator_name(gen), res_dir), "r") as f:
                     times = map(float, f.readlines()[1:])
                     avg_times[i, j] = 1e-9 * sum(times) / ITERS
                     highest = max(highest, avg_times[i, j])
@@ -87,9 +95,10 @@ def plot_avg_times(n1):
 
 
 def plot_box_plot(n1, sd, ld):
+    res_dir = f"{ALL_RESULTS_DIR}/results/"
     times = []
     for gen in ALL_GENERATORS:
-        with open(filename(n1, sd, ld, generator_name(gen)), "r") as f:
+        with open(filename(n1, sd, ld, generator_name(gen), res_dir), "r") as f:
             times.append(list(map(lambda x: 1e-9 * float(x), f.readlines()[1:])))
 
     plt.figure(figsize=(len(times), 8))
@@ -105,7 +114,35 @@ def plot_box_plot(n1, sd, ld):
     plt.savefig(f"{OUTPUT_DIR}box_plot_times_{n1}_{int(sd*100)}_{int(ld*100)}.jpg")
 
 
+def plot_line_graph(sd, ld):
+    """
+    Plots line graph of avg time against n1
+    for all generation methods, on one graph
+    """
+    get_results_dir = lambda n1: f"{ALL_RESULTS_DIR}/small_results_{n1}/results/"
+    output_dir = "./probabilityResults/"
+    n1_values = list(range(10, 101, 10))
+    for gen in ALL_GENERATORS:
+        times = []
+        for n1 in n1_values:
+            with open(filename(n1, sd, ld, generator_name(gen), get_results_dir(n1)), "r") as f:
+                data = list(map(lambda x: 1e-9 * float(x), f.readlines()[1:]))
+                times.append(sum(data) / len(data))
+        plt.plot(n1_values, times, label=generator_short_name(gen))
+    plt.xlabel("Number of Students")
+    plt.ylabel("Time (seconds)")
+    plt.title(f"Average time per generation method ({int(sd*100)}% SD, {int(ld*100)}% LD)")
+    plt.legend()
+    plt.savefig(f"{output_dir}line_times_{int(sd*100)}_{int(ld*100)}.jpg")
+    plt.close()
+
+
 if __name__ == "__main__":
-    plot_heatmap(200)
-    plot_avg_times(200)
-    plot_box_plot(200, 0.05, 0.05)
+    N1 = 100
+    ALL_RESULTS_DIR = "/home/varad/Desktop/programming/algmatch/experimentResults/small_results/"
+    OUTPUT_DIR = f"./probabilityResults/results_{N1}/"
+    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+    # plot_heatmap(N1)
+    # plot_avg_times(N1)
+    # plot_box_plot(N1, 0.05, 0.05)
+    plot_line_graph(0.05, 0.05)
