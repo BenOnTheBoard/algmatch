@@ -104,7 +104,7 @@ def run_experiment(
 
 
 def run_instance(n1: int, sd: float, ld: float, gen: SPASTIG_Abstract):
-    sd, ld = round(sd, 2), round(ld, 2)
+    sd, ld = round(sd, 4), round(ld, 4)
     run_experiment(
         n1, max(5, n1 // 10), sd, ld, ITERS, gen
     )
