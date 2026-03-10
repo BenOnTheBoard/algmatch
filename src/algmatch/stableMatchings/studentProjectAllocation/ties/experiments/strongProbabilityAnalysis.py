@@ -1,4 +1,6 @@
+from gurobipy import Constr
 from matplotlib import pyplot as plt
+from matplotlib.image import BboxImage
 import numpy as np
 import inspect
 from pathlib import Path
@@ -33,7 +35,7 @@ filename = lambda n1, sd, ld, gen_name, res_dir: res_dir + "_".join([
     "results.txt"
 ])
 
-def plot_heatmap(n1):
+def plot_probability_heatmap(n1):
     res_dir = f"{ALL_RESULTS_DIR}/results/"
     for gen in ALL_GENERATORS:
         heatmap = np.zeros((len(SDs), len(LDs)))
@@ -58,7 +60,7 @@ def plot_heatmap(n1):
         plt.ylabel("Student Tie Density")
         plt.colorbar(label="Probability of Stable Matching Existence")
         plt.title(f"Probability Heatmap ({n1} students)\n{generator_name(gen)}")
-        plt.savefig(f"{OUTPUT_DIR}heatmap_{generator_short_name(gen)}_{n1}.jpg")
+        plt.savefig(f"{OUTPUT_DIR(n1)}heatmap_{generator_short_name(gen)}_{n1}.jpg")
         plt.close()
 
 
@@ -90,7 +92,7 @@ def plot_avg_times(n1):
         plt.ylabel("Student Tie Density")
         plt.colorbar(label="Average Time (seconds)")
         plt.title(f"Average Time ({n1} students)\n{generator_name(gen)}")
-        plt.savefig(f"{OUTPUT_DIR}avg_time_{generator_short_name(gen)}_{n1}.jpg")
+        plt.savefig(f"{OUTPUT_DIR(n1)}avg_time_{generator_short_name(gen)}_{n1}.jpg")
         plt.close()
 
 
@@ -111,7 +113,7 @@ def plot_box_plot(n1, sd, ld):
     plt.ylabel("Time (seconds)")
     plt.title(f"Box Plot ({n1} students, SD={sd}, LD={ld})")
     plt.tight_layout()
-    plt.savefig(f"{OUTPUT_DIR}box_plot_times_{n1}_{int(sd*100)}_{int(ld*100)}.jpg")
+    plt.savefig(f"{OUTPUT_DIR(n1)}box_plot_times_{n1}_{int(sd*100)}_{int(ld*100)}.jpg")
 
 
 def plot_line_graph(sd, ld):
@@ -121,14 +123,13 @@ def plot_line_graph(sd, ld):
     """
     get_results_dir = lambda n1: f"{ALL_RESULTS_DIR}/small_results_{n1}/results/"
     output_dir = "./probabilityResults/"
-    n1_values = list(range(10, 101, 10))
     for gen in ALL_GENERATORS:
         times = []
-        for n1 in n1_values:
+        for n1 in ALL_N1_VALUES:
             with open(filename(n1, sd, ld, generator_name(gen), get_results_dir(n1)), "r") as f:
                 data = list(map(lambda x: 1e-9 * float(x), f.readlines()[1:]))
                 times.append(sum(data) / len(data))
-        plt.plot(n1_values, times, label=generator_short_name(gen))
+        plt.plot(ALL_N1_VALUES, times, label=generator_short_name(gen))
     plt.xlabel("Number of Students")
     plt.ylabel("Time (seconds)")
     plt.title(f"Average time per generation method ({int(sd*100)}% SD, {int(ld*100)}% LD)")
@@ -137,12 +138,110 @@ def plot_line_graph(sd, ld):
     plt.close()
 
 
+def plot_probability_heatmap_size():
+    """
+    Plot a probability heatmap for each generator as a subplot
+    for every n1
+    """
+    N_COLS = 4
+    N_ROWS = len(ALL_GENERATORS) // N_COLS + (len(ALL_GENERATORS) % N_COLS != 0)
+    for n1 in ALL_N1_VALUES:
+        res_dir = f"{ALL_RESULTS_DIR}/small_results_{n1}/results/"
+        fig, axes = plt.subplots(N_ROWS, N_COLS, figsize=(N_COLS * 4, N_ROWS * 4), constrained_layout=True)
+        axes = axes.flatten()
+        mesh = None
+        for i, gen in enumerate(ALL_GENERATORS):
+            heatmap = np.zeros((len(SDs), len(LDs)))
+
+            for j, sd in enumerate(SDs):
+                for k, ld in enumerate(LDs):
+                    with open(filename(n1, sd, ld, generator_name(gen), res_dir), "r") as f:
+                        heatmap[j, k] = float(f.readlines()[0].split(",")[0]) / ITERS
+
+            X, Y = np.meshgrid(LDs, SDs)
+            mesh = axes[i].pcolormesh(
+                X, Y,
+                heatmap,
+                cmap="magma_r",
+                vmin=0,
+                vmax=1,
+                shading="auto",
+                edgecolor="k",
+                linewidth=0.5
+            )
+            axes[i].set_xlabel("Lecturer Tie Density")
+            axes[i].set_ylabel("Student Tie Density")
+            axes[i].set_title(generator_name(gen))
+
+        for j in range(len(ALL_GENERATORS), len(axes)):
+            axes[j].set_visible(False)
+
+        plt.tight_layout()
+        cbar_ax = fig.add_axes([1.01, 0.1, 0.02, 0.8])
+        fig.colorbar(mesh, cax=cbar_ax)
+
+        fig.suptitle(f"Probability Heatmap (n1={n1})", fontsize=16, y=1.02)
+        plt.savefig(f"{OUTPUT_DIR(n1)}heatmap_{n1}.jpg", bbox_inches="tight")
+        plt.close()
+
+
+def plot_probability_heatmap_gen():
+    """
+    Plot a probability heatmap for each n1 as a subplot
+    for every generator
+    """
+    N_COLS = 5
+    N_ROWS = len(ALL_N1_VALUES) // N_COLS + (len(ALL_N1_VALUES) % N_COLS != 0)
+    output_dir = "./probabilityResults/"
+    for gen in ALL_GENERATORS:
+        fig, axes = plt.subplots(N_ROWS, N_COLS, figsize=(N_COLS * 4, N_ROWS * 4), constrained_layout=True)
+        axes = axes.flatten()
+        mesh = None
+        for i, n1 in enumerate(ALL_N1_VALUES):
+            res_dir = f"{ALL_RESULTS_DIR}/small_results_{n1}/results/"
+            heatmap = np.zeros((len(SDs), len(LDs)))
+
+            for j, sd in enumerate(SDs):
+                for k, ld in enumerate(LDs):
+                    with open(filename(n1, sd, ld, generator_name(gen), res_dir), "r") as f:
+                        heatmap[j, k] = float(f.readlines()[0].split(",")[0]) / ITERS
+
+            X, Y = np.meshgrid(LDs, SDs)
+            mesh = axes[i].pcolormesh(
+                X, Y,
+                heatmap,
+                cmap="magma_r",
+                vmin=0,
+                vmax=1,
+                shading="auto",
+                edgecolor="k",
+                linewidth=0.5
+            )
+            axes[i].set_xlabel("Lecturer Tie Density")
+            axes[i].set_ylabel("Student Tie Density")
+            axes[i].set_title(f"{generator_name(gen)} ({n1})")
+
+        for j in range(len(ALL_N1_VALUES), len(axes)):
+            axes[j].set_visible(False)
+
+        plt.tight_layout()
+        cbar_ax = fig.add_axes([1.01, 0.1, 0.02, 0.8])
+        fig.colorbar(mesh, cax=cbar_ax)
+
+        fig.suptitle(f"Probability Heatmap ({generator_short_name(gen)})", fontsize=16, y=1.02)
+        plt.savefig(f"{output_dir}heatmap_{generator_short_name(gen)}.jpg", bbox_inches="tight")
+        plt.close()
+
+
 if __name__ == "__main__":
     N1 = 100
+    ALL_N1_VALUES = list(range(10, 101, 10))
     ALL_RESULTS_DIR = "/home/varad/Desktop/programming/algmatch/experimentResults/small_results/"
-    OUTPUT_DIR = f"./probabilityResults/results_{N1}/"
-    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-    # plot_heatmap(N1)
+    OUTPUT_DIR = lambda n1: f"./probabilityResults/results_{n1}/"
+    Path(OUTPUT_DIR(N1)).mkdir(parents=True, exist_ok=True)
+    # plot_probability_heatmap(N1)
     # plot_avg_times(N1)
     # plot_box_plot(N1, 0.05, 0.05)
-    plot_line_graph(0.05, 0.05)
+    # plot_line_graph(0.05, 0.05)
+    plot_probability_heatmap_size()
+    plot_probability_heatmap_gen()
