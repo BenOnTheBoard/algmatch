@@ -236,8 +236,8 @@ def plot_probability_heatmap_gen():
 if __name__ == "__main__":
     N1 = 100
     ALL_N1_VALUES = list(range(10, 101, 10))
-    ALL_RESULTS_DIR = "/home/varad/Desktop/programming/algmatch/experimentResults/small_results/"
-    OUTPUT_DIR = lambda n1: f"./probabilityResults/results_{n1}/"
+    ALL_RESULTS_DIR = "ALL_RESULTS_DIR"
+    OUTPUT_DIR = lambda n1: f"OUTPUT_DIR"
     Path(OUTPUT_DIR(N1)).mkdir(parents=True, exist_ok=True)
     # plot_probability_heatmap(N1)
     # plot_avg_times(N1)
