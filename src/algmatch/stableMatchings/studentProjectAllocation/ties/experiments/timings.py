@@ -1,5 +1,4 @@
 import time
-from types import MethodDescriptorType
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
