@@ -31,7 +31,8 @@ GENERATORS = [
     SPASTIG_Random,
     SPASTIG_ReverseEuclidean,
 ]
-ITERS = 25
+GENERATOR = SPASTIG_ExpectationsEuclidean
+ITERS = 10
 
 
 def combination_generation(*args, **kwargs):
@@ -112,10 +113,10 @@ def run_instance(n1: int, sd: float, ld: float, gen: SPASTIG_Abstract):
 
 if __name__ == "__main__":
     grid = list(product(
-        range(10, 101, 10),
+        range(150, 501, 50),
         np.arange(0, 0.051, 0.005),
         np.arange(0, 0.051, 0.005),
-        GENERATORS + [combination_generation]
+        [GENERATOR]
     ))
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
     Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
