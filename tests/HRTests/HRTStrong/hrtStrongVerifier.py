@@ -23,7 +23,7 @@ class HRTStrongVerifier(AbstractVerifier):
 
         AbstractVerifier.__init__(
             self,
-            HRT("residents", "hospitals"),
+            ("residents", "hospitals"),
             HRTGenerator,
             generator_args,
             HRTEnumerator,
