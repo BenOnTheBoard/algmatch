@@ -3,9 +3,10 @@ For a fixed n1 and varying tie density and preference list length,
 this module compares the matching sizes of strong and weak solvers for SPAST instances.
 """
 import time
-import numpy as np
 from pathlib import Path
 from tqdm import tqdm
+from dataclasses import dataclass
+import json
 
 from concurrent.futures import ProcessPoolExecutor
 from itertools import product
@@ -13,7 +14,14 @@ import os
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastWeakSolver import SPASTWeakSolver
-from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.random import SPASTIG_Random
+from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_ExpectationsEuclidean
+
+
+@dataclass
+class MatchingInfo:
+    time: float
+    size: int
+    rank: list[int]
 
 
 def time_solver(solver, filename) -> tuple[float, dict[str, str]]:
@@ -30,64 +38,112 @@ def find_matching_size(matching: dict[str, str]) -> int:
     return sum(int(bool(v)) for v in matching.values()) if matching else 0
 
 
+def find_rank(
+    matching: dict[str, str] | None,
+    student_preferences: dict[str, list[str]],
+    num_projects: int,
+) -> list[int]:
+    rank = [0] * num_projects
+
+    if matching is None:
+        return rank
+
+    for student, project in matching.items():
+        if project:
+            idx = 0
+            while project not in student_preferences[student][idx]:
+                idx += 1
+            rank[idx] += 1
+
+    return rank
+
+
+def set_info(time, matching: dict[str, str], student_preferences: dict[str, list[str]], num_projects: int):
+    return MatchingInfo(
+        time,
+        find_matching_size(matching),
+        find_rank(matching, student_preferences, num_projects),
+    )
+
+
 def compare_matching_sizes(
     num_students,
     student_tie_density,
     lecturer_tie_density,
     pref_list_length,
     filename="instance.txt"
-) -> tuple[float, int, float, int]:
-    generator = SPASTIG_Random(
+) -> tuple[MatchingInfo, MatchingInfo]:
+    num_projects = num_students // 2
+    generator = SPASTIG_ExpectationsEuclidean(
         num_students=num_students,
         lower_bound=pref_list_length,
         upper_bound=pref_list_length,
-        num_projects=num_students // 2,
+        num_projects=num_projects,
         num_lecturers=num_students // 5,
         student_tie_density=student_tie_density,
         lecturer_tie_density=lecturer_tie_density,
     )
     generator.generate_instance()
     generator.write_instance_to_file(filename)
+    student_prefs = generator.get_student_preferences()
 
     weak_time, weak_answer = time_solver(SPASTWeakSolver, filename)
     strong_time, strong_answer = time_solver(SPASTStrongSolver, filename)
 
     return (
-        weak_time, find_matching_size(weak_answer),
-        strong_time, find_matching_size(strong_answer)
+        set_info(weak_time, weak_answer, student_prefs, num_projects),
+        set_info(strong_time, strong_answer, student_prefs, num_projects)
     )
 
 
-NUM_STUDENTS = 25
 ITERS = 100
 CLUSTER_DIR="./"
 
-def run_instance(sd: float, ld: float):
-    times: list[tuple[float, int, float, int]] = []
+def run_instance(n1: int, sd: float, ld: float):
+    times: list[tuple[MatchingInfo, MatchingInfo]] = []
     sd, ld = round(sd, 2), round(ld, 2)
     for i in range(ITERS):
         times.append(
             compare_matching_sizes(
-                NUM_STUDENTS,
+                n1,
                 sd,
                 ld,
-                NUM_STUDENTS // 2,
-                CLUSTER_DIR + f"data/instance_{int(sd*100)}_{int(ld*100)}_{i}.txt"
+                n1 // 2,
+                CLUSTER_DIR + f"data/{n1}_{int(sd*100)}_{int(ld*100)}_instance_{i}.txt"
             )
         )
 
-    with open(CLUSTER_DIR + f"results/instance_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
-        f.write("Weak Time (ns),Weak Size,Strong Time (ns),Strong Size,Time Difference (ns)\n")
-        for weak_time, weak_size, strong_time, strong_size in times:
-            f.write(f"{weak_time},{weak_size},{strong_time},{strong_size},{weak_time - strong_time}\n")
+    instance_data = {
+        "n1": n1,
+        "sd": sd,
+        "ld": ld,
+        "times": [
+            {
+                "weak": {
+                    "time": weak_info.time,
+                    "size": weak_info.size,
+                    "rank": weak_info.rank,
+                },
+                "strong": {
+                    "time": strong_info.time,
+                    "size": strong_info.size,
+                    "rank": strong_info.rank,
+                },
+                "time_diff": weak_info.time - strong_info.time,
+            }
+            for weak_info, strong_info in times
+        ],
+    }
+    with open(CLUSTER_DIR + f"results/{n1}_{int(sd*100)}_{int(ld*100)}.json", "w") as f:
+        json.dump(instance_data, f)
 
 if __name__ == "__main__":
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
     Path(CLUSTER_DIR + "results").mkdir(parents=True, exist_ok=True)
 
     grid = list(product(
-        np.arange(0, 1, 0.1),
-        np.arange(0, 1, 0.1)
+        range(10, 101, 10),
+        [0.02], [0.02]
     ))
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
