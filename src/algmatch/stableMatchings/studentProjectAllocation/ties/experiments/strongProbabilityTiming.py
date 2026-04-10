@@ -4,10 +4,10 @@ import numpy as np
 from random import choice
 import inspect
 from time import perf_counter_ns
+import os
 
 from concurrent.futures import ProcessPoolExecutor
 from itertools import product
-import os
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import (
@@ -21,7 +21,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators i
     SPASTIG_ReverseEuclidean
 )
 
-CLUSTER_DIR = "./"
+CLUSTER_DIR = os.getenv("CLUSTER_DIR", "./") + "strongProbabilityTimings/"
 GENERATORS = [
     SPASTIG_Attributes,
     SPASTIG_Euclidean,

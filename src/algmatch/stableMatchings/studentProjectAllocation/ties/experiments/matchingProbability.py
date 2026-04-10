@@ -10,7 +10,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver im
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOptimal import SPASTSuperStudentOptimal
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators.random import SPASTIG_Random
 
-CLUSTER_DIR = "./"
+CLUSTER_DIR = os.getenv("CLUSTER_DIR", "./") + "matchingProbability/"
 
 
 def run_experiment(

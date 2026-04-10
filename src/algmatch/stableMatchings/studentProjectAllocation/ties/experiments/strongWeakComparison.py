@@ -7,10 +7,10 @@ from pathlib import Path
 from tqdm import tqdm
 from dataclasses import dataclass
 import json
+import os
 
 from concurrent.futures import ProcessPoolExecutor
 from itertools import product
-import os
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastWeakSolver import SPASTWeakSolver
@@ -97,7 +97,7 @@ def compare_matching_sizes(
 
 
 ITERS = 100
-CLUSTER_DIR="./"
+CLUSTER_DIR = os.getenv("CLUSTER_DIR", "./") + "strongWeakComparison/"
 
 def run_instance(n1: int, sd: float, ld: float):
     times: list[tuple[MatchingInfo, MatchingInfo]] = []

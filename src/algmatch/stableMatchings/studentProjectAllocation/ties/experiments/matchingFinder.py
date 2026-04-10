@@ -30,7 +30,8 @@ def find_and_write(filename="instance.txt"):
 
 NUM_STUDENTS = 25
 ITERS = 100
-CLUSTER_DIR="./"
+CLUSTER_DIR = os.getenv("CLUSTER_DIR", "./") + "matchingFinder/"
+
 
 def run_instance(sd: float, ld: float):
     sd, ld = round(sd, 2), round(ld, 2)
