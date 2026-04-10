@@ -67,6 +67,10 @@ class AbstractInstanceGenerator(ABC):
         return "SPASTIG_Abstract"
 
 
+    def get_student_preferences(self) -> dict[str, list[str]]:
+        return self._sp
+
+
     def _reset_instance(self):
         # student -> [project preferences]
         self._sp = {
