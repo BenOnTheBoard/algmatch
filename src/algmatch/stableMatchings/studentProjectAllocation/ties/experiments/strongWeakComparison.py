@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     grid = list(product(
         range(10, 101, 10),
-        [0.02], [0.02]
+        [0.01], [0.01]
     ))
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
