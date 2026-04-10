@@ -108,7 +108,7 @@ def run_instance(n1: int, sd: float, ld: float):
                 n1,
                 sd,
                 ld,
-                n1 // 2,
+                max(5, n1 // 10),
                 CLUSTER_DIR + f"data/{n1}_{int(sd*100)}_{int(ld*100)}_instance_{i}.txt"
             )
         )
