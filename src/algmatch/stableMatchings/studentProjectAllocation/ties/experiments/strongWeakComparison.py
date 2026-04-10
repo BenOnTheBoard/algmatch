@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from tqdm import tqdm
 from dataclasses import dataclass
-from pprint import pprint
+import json
 
 from concurrent.futures import ProcessPoolExecutor
 from itertools import product
@@ -113,20 +113,29 @@ def run_instance(n1: int, sd: float, ld: float):
             )
         )
 
-    with open(CLUSTER_DIR + f"results/{n1}_{int(sd*100)}_{int(ld*100)}.csv", "w") as f:
-        f.write("Weak Time (ns),Weak Size,Weak Rank,Strong Time (ns),Strong Size,Strong Rank,Time Difference (ns)\n")
-        for weak_info, strong_info in times:
-            f.write(
-                ','.join([
-                    str(weak_info.time),
-                    str(weak_info.size),
-                    '[' + ','.join(map(str, weak_info.rank)) + ']',
-                    str(strong_info.time),
-                    str(strong_info.size),
-                    '[' + ','.join(map(str, strong_info.rank)) + ']',
-                    str(weak_info.time - strong_info.time),
-                ]) + "\n"
-            )
+    instance_data = {
+        "n1": n1,
+        "sd": sd,
+        "ld": ld,
+        "times": [
+            {
+                "weak": {
+                    "time": weak_info.time,
+                    "size": weak_info.size,
+                    "rank": weak_info.rank,
+                },
+                "strong": {
+                    "time": strong_info.time,
+                    "size": strong_info.size,
+                    "rank": strong_info.rank,
+                },
+                "time_diff": weak_info.time - strong_info.time,
+            }
+            for weak_info, strong_info in times
+        ],
+    }
+    with open(CLUSTER_DIR + f"results/{n1}_{int(sd*100)}_{int(ld*100)}.json", "w") as f:
+        json.dump(instance_data, f)
 
 if __name__ == "__main__":
     Path(CLUSTER_DIR + "data").mkdir(parents=True, exist_ok=True)
