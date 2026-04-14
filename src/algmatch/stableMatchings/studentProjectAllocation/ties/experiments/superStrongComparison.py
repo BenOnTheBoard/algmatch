@@ -9,7 +9,7 @@ import time
 import os
 import numpy as np
 from tqdm import tqdm
-from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import Pool
 from itertools import product
 
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastStrongSolver import SPASTStrongSolver
@@ -74,5 +74,5 @@ if __name__ == "__main__":
         np.arange(0.01, 0.031, 0.005),
     ))
 
-    with ProcessPoolExecutor(max_workers=os.cpu_count()) as pool:
-        for _ in tqdm(pool.map(compare_matching_strengths, *zip(*grid))): pass
+    with Pool(processes=os.cpu_count()) as pool:
+        for _ in tqdm(pool.starmap(compare_matching_strengths, grid)): pass
