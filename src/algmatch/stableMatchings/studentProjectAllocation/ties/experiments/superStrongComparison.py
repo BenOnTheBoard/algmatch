@@ -17,6 +17,7 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOpt
 from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators import SPASTIG_ExpectationsEuclidean
 
 ITERS = 100
+FILENAME = "instance.txt"
 CLUSTER_DIR = os.path.join(os.getenv("CLUSTER_DIR", "./"), "superStrongComparison/")
 
 
@@ -38,14 +39,14 @@ def compare_matching_strengths(n1, sd, ld):
 
     for _ in range(ITERS):
         generator.generate_instance()
-        generator.write_instance_to_file("instance.txt")
+        generator.write_instance_to_file(FILENAME)
 
-        super_solver = SPASTSuperStudentOptimal(filename="instance.txt")
+        super_solver = SPASTSuperStudentOptimal(filename=FILENAME)
         super_solver.run()
         if super_solver.is_stable:
             super_count += 1
         else:
-            strong_solver = SPASTStrongSolver(filename="instance.txt", output_flag=0)
+            strong_solver = SPASTStrongSolver(filename=FILENAME, output_flag=0)
             strong_solver.J.setParam("Threads", 1)
             strong_solver.solve()
             if strong_solver.assignments_as_dict():
