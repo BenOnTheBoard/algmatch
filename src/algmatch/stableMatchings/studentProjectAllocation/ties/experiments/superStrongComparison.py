@@ -7,6 +7,7 @@ Record total number of instances generated.
 """
 import time
 import os
+import uuid
 import numpy as np
 from tqdm import tqdm
 from multiprocessing import Pool
@@ -23,10 +24,12 @@ OVERWRITE_EXISTING_FILES = False
 
 
 def compare_matching_strengths(n1, sd, ld):
+    sd, ld = round(sd, 4), round(ld, 4)
+    filename = f"/tmp/instance_{os.getpid()}_{uuid.uuid4().hex}.txt"
+
     output_filename = os.path.join(CLUSTER_DIR, f"results_{n1}_{sd}_{ld}.txt")
     if not OVERWRITE_EXISTING_FILES and os.path.isfile(output_filename): return
 
-    sd, ld = round(sd, 4), round(ld, 4)
     pref_list_length = max(5, n1 // 10)
     generator = SPASTIG_ExpectationsEuclidean(
         num_students=n1,
@@ -43,14 +46,14 @@ def compare_matching_strengths(n1, sd, ld):
 
     for _ in range(ITERS):
         generator.generate_instance()
-        generator.write_instance_to_file(FILENAME)
+        generator.write_instance_to_file(filename)
 
-        super_solver = SPASTSuperStudentOptimal(filename=FILENAME)
+        super_solver = SPASTSuperStudentOptimal(filename=filename)
         super_solver.run()
         if super_solver.is_stable:
             super_count += 1
         else:
-            strong_solver = SPASTStrongSolver(filename=FILENAME, output_flag=0)
+            strong_solver = SPASTStrongSolver(filename=filename, output_flag=0)
             strong_solver.J.setParam("Threads", 1)
             strong_solver.solve()
             if strong_solver.assignments_as_dict():
