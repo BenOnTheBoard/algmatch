@@ -73,7 +73,7 @@ P(super),P(strong),P(neither),P(strong|no super)
 
 if __name__ == "__main__":
     grid = list(product(
-        range(50, 301, 25),
+        range(50, 251, 25),
         np.arange(0.01, 0.031, 0.005),
         np.arange(0.01, 0.031, 0.005),
     ))
