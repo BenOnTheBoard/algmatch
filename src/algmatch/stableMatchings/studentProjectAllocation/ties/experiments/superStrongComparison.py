@@ -22,6 +22,9 @@ CLUSTER_DIR = os.path.join(os.getenv("CLUSTER_DIR", "./"), "superStrongCompariso
 
 
 def compare_matching_strengths(n1, sd, ld):
+    output_filename = os.path.join(CLUSTER_DIR, f"results_{n1}_{sd}_{ld}.txt")
+    if os.path.isfile(output_filename): return
+
     sd, ld = round(sd, 4), round(ld, 4)
     pref_list_length = max(5, n1 // 10)
     generator = SPASTIG_ExpectationsEuclidean(
@@ -64,7 +67,7 @@ for n1 = {n1}, sd = {sd}, ld = {ld}.
 Total time taken: {time_taken}s
 
 P(super),P(strong),P(neither),P(strong|no super)
-{super_count / ITERS},{strong_count / ITERS},{neither_count / ITERS},{strong_count / (ITERS - super_count)}""")
+{super_count / ITERS},{strong_count / ITERS},{neither_count / ITERS},{(strong_count / (ITERS - super_count)) if super_count != ITERS else 'inf'}""")
 
 
 if __name__ == "__main__":
