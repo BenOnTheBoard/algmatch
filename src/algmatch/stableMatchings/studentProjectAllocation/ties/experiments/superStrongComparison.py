@@ -19,11 +19,12 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.instanceGenerators i
 ITERS = 100
 FILENAME = "instance.txt"
 CLUSTER_DIR = os.path.join(os.getenv("CLUSTER_DIR", "./"), "superStrongComparison/")
+OVERWRITE_EXISTING_FILES = False
 
 
 def compare_matching_strengths(n1, sd, ld):
     output_filename = os.path.join(CLUSTER_DIR, f"results_{n1}_{sd}_{ld}.txt")
-    if os.path.isfile(output_filename): return
+    if not OVERWRITE_EXISTING_FILES and os.path.isfile(output_filename): return
 
     sd, ld = round(sd, 4), round(ld, 4)
     pref_list_length = max(5, n1 // 10)
@@ -57,7 +58,7 @@ def compare_matching_strengths(n1, sd, ld):
 
     time_taken = (time.perf_counter_ns() - start_time) / 1e9
     neither_count = ITERS - super_count - strong_count
-    with open(os.path.join(CLUSTER_DIR, f"results_{n1}_{sd}_{ld}.txt"), "w") as f:
+    with open(output_filename, "w") as f:
         f.write(f"""Out of {ITERS} generated instances,
     {super_count} had super stable matchings (and hence strongly stable matchings),
     {ITERS - super_count} had no super stable matchings,
