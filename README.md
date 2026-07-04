@@ -3,21 +3,22 @@
 # Algmatch
 
 Algmatch contains implementations of polynomial-time algorithms for matching problems. The full list of support problem is as follow:
+
 - SM: Stable Marriage
 - HR: Hospital/Residents
-    - Resident-optimal algorithm and hospital-optimal algorithm
+  - Resident-optimal algorithm and hospital-optimal algorithm
 - SPA-S: Student Project Allocation with lecturer preferences over students
-    - Student-optimal algorithm and lecturer-optimal algorithm
+  - Student-optimal algorithm and lecturer-optimal algorithm
 - SPA-P: Student Project Allocation with lecturer preferences over projects (requires Gurobi)
-    - for usage, see [this](https://github.com/BenOnTheBoard/algmatch/blob/main/SPAP_Usage.ipynb) notebook.
+  - for usage, see [this](https://github.com/BenOnTheBoard/algmatch/blob/main/SPAP_Usage.ipynb) notebook.
 - SR: Stable Roommates
 - SMT: Strong and Super-stable matchings in Stable Marriage with Ties
 - HRT: Hospital/Residents with Ties
-    - Strong: Resident-optimal algorithm and hospital-optimal algorithm for strong stability
-    - Super: Resident-optimal algorithm and hospital-optimal algorithm for super-stability
+  - Strong: Resident-optimal algorithm and hospital-optimal algorithm for strong stability
+  - Super: Resident-optimal algorithm and hospital-optimal algorithm for super-stability
 - SPA-ST: Student Project Allocation with lecturer preferences over students and ties
-    - Super: Student-optimal algorithm
-    - There are no published lecturer-optimal algorithm for super-stability or any published algorithm for strong stability exists at this time.
+  - Super: Student-optimal algorithm
+  - There are no published lecturer-optimal algorithm for super-stability or any published algorithm for strong stability exists at this time.
 
 Requires Python 3.10 or later.
 
@@ -31,7 +32,7 @@ Simply run `pip install algmatch`.
 
 To import a specific algorithm, use `from algmatch import <algorithm>`, e.g. `from algmatch import SPAS` or `from algmatch import StudentProjectAllocation`.
 Create a file or dictionary with your instance, following the guidelines in the [`DATA_FORMAT_GUIDELINES`](https://github.com/BenOnTheBoard/algmatch/tree/v1.0.1/DATA_FORMAT_GUIDELINES) folder.
-For example, 
+For example,
 
 Importing data:
 
@@ -93,9 +94,9 @@ print(spas_2_lecturer_stable_matching)
 ```
 
 ```
-SPA student stable matching:
+Student-optimal stable matching:
 {'student_sided': {'s1': 'p1', 's2': 'p2', 's3': 'p3', 's4': 'p4'}, 'lecturer_sided': {'l1': ['s1', 's2'], 'l2': ['s3', 's4']}}
-SPA lecturer stable matching:
+Lecturer-optimal stable matching:
 {'student_sided': {'s1': 'p2', 's2': 'p3', 's3': 'p1', 's4': 'p4'}, 'lecturer_sided': {'l1': ['s1', 's3'], 'l2': ['s2', 's4']}}
 ```
 
