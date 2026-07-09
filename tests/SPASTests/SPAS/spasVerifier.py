@@ -23,7 +23,7 @@ class SPASVerifier(AbstractVerifier):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
-        generator_args = (
+        generator = SPASGenerator(
             total_students,
             total_projects,
             total_lecturers,
@@ -35,7 +35,6 @@ class SPASVerifier(AbstractVerifier):
             self,
             SPAS,
             ("students", "lecturers"),
-            SPASGenerator,
-            generator_args,
+            generator,
             SPASEnumerator,
         )

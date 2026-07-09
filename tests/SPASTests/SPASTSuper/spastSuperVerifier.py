@@ -23,7 +23,7 @@ class SPASTSuperVerifier(AbstractVerifier):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
-        generator_args = (
+        generator = SPASTGenerator(
             total_students,
             total_projects,
             total_lecturers,
@@ -35,8 +35,7 @@ class SPASTSuperVerifier(AbstractVerifier):
             self,
             SPAST,
             ("students", "lecturers"),
-            SPASTGenerator,
-            generator_args,
+            generator,
             SPASTEnumerator,
             "super",
         )
