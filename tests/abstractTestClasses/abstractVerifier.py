@@ -1,10 +1,10 @@
 class AbstractVerifier:
-    def __init__(self, problem, sides, gen, gen_args, brute_force, stability_type=None):
+    def __init__(self, problem, sides, gen, brute_force, stability_type=None):
         self.Problem = problem
         self.sides = sides
         self.BruteForce = brute_force
         self.stability_type = stability_type
-        self.gen = gen(*gen_args)
+        self.gen = gen
         self.current_instance = {}
 
     def generate_instance(self):
@@ -34,7 +34,7 @@ class AbstractVerifier:
         # optimal and pessimal from man/resident/student side
         optimal_solver = self._construct_solver(True)
         pessimal_solver = self._construct_solver(False)
-        bruteforcer = self.construct_bruteforcer()
+        bruteforcer = self._construct_bruteforcer()
 
         m_0 = optimal_solver.get_stable_matching()
         m_z = pessimal_solver.get_stable_matching()

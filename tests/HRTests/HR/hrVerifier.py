@@ -19,13 +19,14 @@ class HRVerifier(AbstractVerifier):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
-        generator_args = (total_residents, total_hospitals, lower_bound, upper_bound)
+        generator = HRGenerator(
+            total_residents, total_hospitals, lower_bound, upper_bound
+        )
 
         AbstractVerifier.__init__(
             self,
             HR,
             ("residents", "hospitals"),
-            HRGenerator,
-            generator_args,
+            generator,
             HREnumerator,
         )

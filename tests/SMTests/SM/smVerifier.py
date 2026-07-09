@@ -20,13 +20,12 @@ class SMVerifier(AbstractVerifier):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
-        generator_args = (total_men, total_women, lower_bound, upper_bound)
+        generator = SMGenerator(total_men, total_women, lower_bound, upper_bound)
 
         AbstractVerifier.__init__(
             self,
             StableMarriageProblem,
             ("men", "women"),
-            SMGenerator,
-            generator_args,
+            generator,
             SMEnumerator,
         )

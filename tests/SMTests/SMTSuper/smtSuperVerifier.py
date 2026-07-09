@@ -19,14 +19,13 @@ class SMTSuperVerifier(AbstractVerifier):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
-        generator_args = (total_men, total_women, lower_bound, upper_bound)
+        generator = SMTGenerator(total_men, total_women, lower_bound, upper_bound)
 
         AbstractVerifier.__init__(
             self,
             SMT,
             ("men", "women"),
-            SMTGenerator,
-            generator_args,
+            generator,
             SMTEnumerator,
             "super",
         )
