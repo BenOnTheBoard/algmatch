@@ -8,6 +8,7 @@ import os
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtPreferenceInstance import (
     SMTPreferenceInstance,
 )
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SMTAbstract:
@@ -15,7 +16,7 @@ class SMTAbstract:
         self,
         filename: str | None = None,
         dictionary: dict | None = None,
-        stability_type: str = None,
+        stability_type: StabilityType = None,
     ) -> None:
         assert filename is not None or dictionary is not None, (
             "Either filename or dictionary must be provided"
@@ -24,15 +25,14 @@ class SMTAbstract:
             "Only one of filename or dictionary must be provided"
         )
 
-        self._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
         if filename is not None:
             assert os.path.isfile(filename), f"File {filename} does not exist"
             self._reader = SMTPreferenceInstance(filename=filename)
 
         if dictionary is not None:
             self._reader = SMTPreferenceInstance(dictionary=dictionary)
+
+        self.stability_type = stability_type
 
         self.men = self._reader.men
         self.women = self._reader.women
@@ -46,14 +46,6 @@ class SMTAbstract:
             "woman_sided": {w: "" for w in self.women},
         }
         self.is_stable = False
-
-    @staticmethod
-    def _assert_valid_stability_type(st) -> None:
-        assert st is not None, "Select a stability type - either 'super' or 'strong'"
-        assert type(st) is str, "Stability type is not str'"
-        assert st.lower() in ("super", "strong"), (
-            "Stability type must be either 'super' or 'strong'"
-        )
 
     def _check_super_stability(self) -> bool:
         # first check for multiple-assignment

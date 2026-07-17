@@ -41,7 +41,7 @@ class HospitalResidentsProblemWithTies:
         :param filename: str, optional, default=None, the path to the file to read in the preferences from.
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         :param optimised_side: str, optional, default="residents", whether the algorithm is "residents" (default) or "hospitals" sided.
-        :param stability_type_str: str, default=None, specifies the stability condition to be solved for.
+        :param stability_type: str, default=None, specifies the stability condition to be solved for.
         """
         if filename is not None:
             filename = os.path.join(os.getcwd(), filename)
