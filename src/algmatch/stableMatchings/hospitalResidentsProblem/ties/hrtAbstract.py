@@ -8,6 +8,7 @@ import os
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtPreferenceInstance import (
     HRTPreferenceInstance,
 )
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HRTAbstract:
@@ -15,7 +16,7 @@ class HRTAbstract:
         self,
         filename: str | None = None,
         dictionary: dict | None = None,
-        stability_type: str = None,
+        stability_type: StabilityType = None,
     ) -> None:
         assert filename is not None or dictionary is not None, (
             "Either filename or dictionary must be provided"
@@ -24,15 +25,14 @@ class HRTAbstract:
             "Only one of filename or dictionary must be provided"
         )
 
-        self._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
         if filename is not None:
             assert os.path.isfile(filename), f"File {filename} does not exist"
             self._reader = HRTPreferenceInstance(filename=filename)
 
         if dictionary is not None:
             self._reader = HRTPreferenceInstance(dictionary=dictionary)
+
+        self.stability_type = stability_type
 
         self.residents = self._reader.residents
         self.hospitals = self._reader.hospitals
@@ -46,14 +46,6 @@ class HRTAbstract:
             "hospital_sided": {h: set() for h in self.hospitals},
         }
         self.is_stable = False
-
-    @staticmethod
-    def _assert_valid_stability_type(st) -> None:
-        assert st is not None, "Select a stability type - either 'super' or 'strong'"
-        assert type(st) is str, "Stability type is not str'"
-        assert st.lower() in ("super", "strong"), (
-            "Stability type must be either 'super' or 'strong'"
-        )
 
     def _get_worst_existing_resident(self, hospital):
         existing_residents = self.M[hospital]["assigned"]

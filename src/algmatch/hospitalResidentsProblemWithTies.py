@@ -16,12 +16,18 @@ from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtSuperResidentOpti
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtSuperHospitalOptimal import (
     HRTSuperHospitalOptimal,
 )
-from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
-    HRTAbstract,
-)
+
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HospitalResidentsProblemWithTies:
+    algorithms = {
+        (StabilityType.SUPER, "residents"): HRTSuperResidentOptimal,
+        (StabilityType.SUPER, "hospitals"): HRTSuperHospitalOptimal,
+        (StabilityType.STRONG, "residents"): HRTStrongResidentOptimal,
+        (StabilityType.STRONG, "hospitals"): HRTStrongHospitalOptimal,
+    }
+
     def __init__(
         self,
         filename: str | None = None,
@@ -35,7 +41,7 @@ class HospitalResidentsProblemWithTies:
         :param filename: str, optional, default=None, the path to the file to read in the preferences from.
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         :param optimised_side: str, optional, default="residents", whether the algorithm is "residents" (default) or "hospitals" sided.
-        :param stability_type: str, default=None, specifies the stability condition to be solved for.
+        :param stability_type_str: str, default=None, specifies the stability condition to be solved for.
         """
         if filename is not None:
             filename = os.path.join(os.getcwd(), filename)
@@ -53,38 +59,22 @@ class HospitalResidentsProblemWithTies:
         )
 
     def _validate_and_save_parameters(
-        self, filename, dictionary, optimised_side, stability_type
+        self, filename, dictionary, optimised_side, stability_type_str
     ):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
-
-        HRTAbstract._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
+        self.stability_type = StabilityType.from_value(stability_type_str)
         self.filename = filename
         self.dictionary = dictionary
 
     def _set_algorithm(self):
-        if self.stability_type == "super":
-            if self.optimised_side == "residents":
-                self.hr_alg = HRTSuperResidentOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-            else:
-                self.hr_alg = HRTSuperHospitalOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-        elif self.stability_type == "strong":
-            if self.optimised_side == "residents":
-                self.hr_alg = HRTStrongResidentOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-            else:
-                self.hr_alg = HRTStrongHospitalOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-        else:
-            raise ValueError('stability_type must be either "strong" or "super".')
+        alg_key = (self.stability_type, self.optimised_side)
+        if alg_key not in self.algorithms:
+            raise NotImplementedError(
+                "No algorithm has been implemented for this case."
+            )
+        alg_class = self.algorithms[alg_key]
+        self.hr_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
 
     def get_stable_matching(self) -> dict | None:
         """
