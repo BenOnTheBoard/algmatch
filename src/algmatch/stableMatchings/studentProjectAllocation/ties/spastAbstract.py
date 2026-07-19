@@ -298,7 +298,7 @@ class SPASTAbstract:
             self._save_student_sided()
             self._save_lecturer_sided()
 
-            if self.stability_type == "super":
+            if self.stability_type == StabilityType.SUPER:
                 self.is_stable = self._check_super_stability()
             else:
                 self.is_stable = self._check_strong_stability()

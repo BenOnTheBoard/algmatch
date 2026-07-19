@@ -232,7 +232,7 @@ class SMTAbstract:
             self.save_man_sided()
             self.save_woman_sided()
 
-            if self.stability_type == "super":
+            if self.stability_type == StabilityType.SUPER:
                 self.is_stable = self._check_super_stability()
             else:
                 self.is_stable = self._check_strong_stability()

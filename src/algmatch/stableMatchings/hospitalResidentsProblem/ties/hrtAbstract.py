@@ -239,7 +239,7 @@ class HRTAbstract:
             self.save_resident_sided()
             self.save_hospital_sided()
 
-            if self.stability_type == "super":
+            if self.stability_type == StabilityType.SUPER:
                 self.is_stable = self._check_super_stability()
             else:
                 self.is_stable = self._check_strong_stability()
