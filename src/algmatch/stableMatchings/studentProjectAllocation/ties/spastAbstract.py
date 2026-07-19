@@ -10,6 +10,7 @@ import os
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastPreferenceInstance import (
     SPASTPreferenceInstance,
 )
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SPASTAbstract:
@@ -17,7 +18,7 @@ class SPASTAbstract:
         self,
         filename: str | None = None,
         dictionary: dict | None = None,
-        stability_type: str = None,
+        stability_type: StabilityType = None,
     ) -> None:
         assert filename is not None or dictionary is not None, (
             "Either filename or dictionary must be provided"
@@ -26,15 +27,14 @@ class SPASTAbstract:
             "Only one of filename or dictionary must be provided"
         )
 
-        self._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
         if filename is not None:
             assert os.path.isfile(filename), f"File {filename} does not exist"
             self._reader = SPASTPreferenceInstance(filename=filename)
 
         if dictionary is not None:
             self._reader = SPASTPreferenceInstance(dictionary=dictionary)
+
+        self.stability_type = stability_type
 
         self.students = self._reader.students
         self.projects = self._reader.projects
@@ -56,14 +56,6 @@ class SPASTAbstract:
             self._blocking_pair_biii,
         )
         self.is_stable = False
-
-    @staticmethod
-    def _assert_valid_stability_type(st) -> None:
-        assert st is not None, "Select a stability type - either 'super' or 'strong'"
-        assert type(st) is str, "Stability type is not str'"
-        assert st.lower() in ("super", "strong"), (
-            "Stability type must be either 'super' or 'strong'"
-        )
 
     def _get_lecturer_worst_existing_student(self, lecturer):
         existing_students = self.M[lecturer]["assigned"]

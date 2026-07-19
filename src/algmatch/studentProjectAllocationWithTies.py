@@ -7,12 +7,15 @@ import os
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOptimal import (
     SPASTSuperStudentOptimal,
 )
-from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstract import (
-    SPASTAbstract,
-)
+
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
-class StudentProjectAllocationWithTies:
+class StudentProjectAllocationWithTies:  #
+    algorithms = {
+        (StabilityType.SUPER, "students"): SPASTSuperStudentOptimal,
+    }
+
     def __init__(
         self,
         filename: str | None = None,
@@ -48,27 +51,18 @@ class StudentProjectAllocationWithTies:
     ):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
-
-        SPASTAbstract._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
+        self.stability_type = StabilityType.from_value(stability_type)
         self.filename = filename
         self.dictionary = dictionary
 
     def _set_algorithm(self):
-        if self.stability_type == "super":
-            if self.optimised_side == "students":
-                self.spas_alg = SPASTSuperStudentOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-            else:
-                raise NotImplementedError(
-                    "Lecturer oriented algorithms are not yet available."
-                )
-        elif self.stability_type == "strong":
-            raise NotImplementedError("Strong algorithms are not yet available.")
-        else:
-            raise ValueError('stability_type must be either "strong" or "super".')
+        alg_key = (self.stability_type, self.optimised_side)
+        if alg_key not in self.algorithms:
+            raise NotImplementedError(
+                "No algorithm has been implemented for this case."
+            )
+        alg_class = self.algorithms[alg_key]
+        self.spas_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
 
     def get_stable_matching(self) -> dict | None:
         """

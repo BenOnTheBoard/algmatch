@@ -15,7 +15,7 @@ class SMTEnumerator(SMTAbstract, SMGenericEnumerator):
         elif self.stability_type == StabilityType.STRONG:
             return self._check_strong_stability()
         else:
-            raise ValueError("Stability type is neither 'super' or 'strong'")
+            raise ValueError("Stability type is neither 'super' nor 'strong'")
 
     def man_trial_order(self, man):
         for tie in self.men[man]["list"]:
