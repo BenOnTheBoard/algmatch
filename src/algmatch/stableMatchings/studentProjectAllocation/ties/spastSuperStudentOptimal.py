@@ -5,6 +5,7 @@ Algorithm to produce M_0, the student-optimal, lecturer-pessimal super-stable ma
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstract import (
     SPASTAbstract,
 )
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SPASTSuperStudentOptimal(SPASTAbstract):
@@ -12,7 +13,7 @@ class SPASTSuperStudentOptimal(SPASTAbstract):
         self, filename: str | None = None, dictionary: dict | None = None
     ) -> None:
         super().__init__(
-            filename=filename, dictionary=dictionary, stability_type="super"
+            filename=filename, dictionary=dictionary, stability_type=StabilityType.SUPER
         )
 
         self.unassigned_students = set()

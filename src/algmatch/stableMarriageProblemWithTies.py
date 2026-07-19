@@ -15,10 +15,18 @@ from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongManOptimal imp
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongWomanOptimal import (
     SMTStrongWomanOptimal,
 )
-from algmatch.stableMatchings.stableMarriageProblem.ties.smtAbstract import SMTAbstract
+
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class StableMarriageProblemWithTies:
+    algorithms = {
+        (StabilityType.SUPER, "men"): SMTSuperManOriented,
+        (StabilityType.SUPER, "women"): SMTSuperWomanOriented,
+        (StabilityType.STRONG, "men"): SMTStrongManOptimal,
+        (StabilityType.STRONG, "women"): SMTStrongWomanOptimal,
+    }
+
     def __init__(
         self,
         filename: str | None = None,
@@ -44,43 +52,28 @@ class StableMarriageProblemWithTies:
 
     def _assert_valid_optimised_side(self, optimised_side):
         assert type(optimised_side) is str, "Param optimised_side must be of type str"
+        optimised_side = optimised_side.lower()
         assert optimised_side in ("men", "women"), (
             "Optimised side must either be 'men' or 'women'"
         )
 
     def _validate_and_save_parameters(
-        self, filename, dictionary, optimised_side, stability_type
+        self, filename, dictionary, optimised_side, stability_type_str
     ):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
-
-        SMTAbstract._assert_valid_stability_type(stability_type)
-        self.stability_type = stability_type.lower()
-
+        self.stability_type = StabilityType.from_value(stability_type_str)
         self.filename = filename
         self.dictionary = dictionary
 
     def _set_algorithm(self):
-        if self.stability_type == "super":
-            if self.optimised_side == "men":
-                self.sm_alg = SMTSuperManOriented(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-            else:
-                self.sm_alg = SMTSuperWomanOriented(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-        elif self.stability_type == "strong":
-            if self.optimised_side == "men":
-                self.sm_alg = SMTStrongManOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-            else:
-                self.sm_alg = SMTStrongWomanOptimal(
-                    filename=self.filename, dictionary=self.dictionary
-                )
-        else:
-            raise ValueError('stability_type must be either "strong" or "super".')
+        alg_key = (self.stability_type, self.optimised_side)
+        if alg_key not in self.algorithms:
+            raise NotImplementedError(
+                "No algorithm has been implemented for this case."
+            )
+        alg_class = self.algorithms[alg_key]
+        self.sm_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
 
     def get_stable_matching(self) -> dict | None:
         """

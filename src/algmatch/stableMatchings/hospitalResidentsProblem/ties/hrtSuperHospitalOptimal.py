@@ -5,6 +5,7 @@ Algorithm to produce M_0, the hospital-optimal, resident-pessimal super-stable m
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
     HRTAbstract,
 )
+from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HRTSuperHospitalOptimal(HRTAbstract):
@@ -12,7 +13,7 @@ class HRTSuperHospitalOptimal(HRTAbstract):
         self, filename: str | None = None, dictionary: dict | None = None
     ) -> None:
         super().__init__(
-            filename=filename, dictionary=dictionary, stability_type="super"
+            filename=filename, dictionary=dictionary, stability_type=StabilityType.SUPER
         )
 
         self.undersub_hospitals = set()
