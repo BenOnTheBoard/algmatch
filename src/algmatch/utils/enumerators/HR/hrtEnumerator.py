@@ -2,13 +2,15 @@ from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
     HRTAbstract,
 )
 from algmatch.utils.enumerators.HR.hrGenericEnumerator import HRGenericEnumerator
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HRTEnumerator(HRTAbstract, HRGenericEnumerator):
     def __init__(self, dictionary, stability_type):
+        source = PreferenceSource(dictionary=dictionary)
         stability_type = StabilityType.from_value(stability_type)
-        HRTAbstract.__init__(self, dictionary=dictionary, stability_type=stability_type)
+        HRTAbstract.__init__(self, source=source, stability_type=stability_type)
         HRGenericEnumerator.__init__(self)
 
     def has_stability(self) -> bool:

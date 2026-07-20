@@ -5,17 +5,13 @@ Algorithm to produce M_0, the resident-optimal, hospital-pessimal super-stable m
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
     HRTAbstract,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HRTSuperResidentOptimal(HRTAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(
-            filename=filename, dictionary=dictionary, stability_type=StabilityType.SUPER
-        )
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source, StabilityType.SUPER)
         self.unassigned_residents = set()
         self.been_full = {h: False for h in self.hospitals}
 

@@ -2,17 +2,16 @@
 Algorithm to produce M_0, the hospital-optimal, resident-pessimal strongly stable matching, where such a thing exists.
 """
 
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongAbstract import (
     HRTStrongAbstract,
 )
 
 
 class HRTStrongHospitalOptimal(HRTStrongAbstract):
-    def __init__(self, filename=None, dictionary=None):
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.undersub_hospitals = set()
-
         self.unbound = {h: set() for h in self.hospitals}
 
         for resident in self.residents:
