@@ -5,9 +5,8 @@ Store preference lists for Stable Roommates stable matching algorithm.
 from algmatch.abstractClasses.abstractPreferenceInstance import (
     AbstractPreferenceInstance,
 )
-
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.errors.InstanceSetupErrors import PrefSelfError
-
 from algmatch.stableMatchings.stableRoommatesProblem.fileReader import FileReader
 from algmatch.stableMatchings.stableRoommatesProblem.dictionaryReader import (
     DictionaryReader,
@@ -15,18 +14,12 @@ from algmatch.stableMatchings.stableRoommatesProblem.dictionaryReader import (
 
 
 class SRPreferenceInstance(AbstractPreferenceInstance):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename, dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source=source)
         self._general_setup_procedure()
 
-    def _load_from_file(self, filename: str) -> None:
-        reader = FileReader(filename)
-        self.roommates = reader.roommates
-
-    def _load_from_dictionary(self, dictionary: dict) -> None:
-        reader = DictionaryReader(dictionary)
+    def _load(self, source: PreferenceSource) -> None:
+        reader = source.build_reader(FileReader, DictionaryReader)
         self.roommates = reader.roommates
 
     def check_preference_lists(self) -> None:

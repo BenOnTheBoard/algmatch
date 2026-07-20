@@ -2,9 +2,8 @@
 Class to provide interface for the Stable Roommates Problem algorithm.
 """
 
-import os
-
 from algmatch.stableMatchings.stableRoommatesProblem.srAlgorithm import SRAlgorithm
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class StableRoommatesProblem:
@@ -19,10 +18,8 @@ class StableRoommatesProblem:
         :param filename: str, optional, default=None, the path to the file to read in the preferences from.
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
-
-        self.sr_alg = SRAlgorithm(filename=filename, dictionary=dictionary)
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
+        self.sr_alg = SRAlgorithm(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

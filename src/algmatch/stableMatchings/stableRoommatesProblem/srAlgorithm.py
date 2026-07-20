@@ -3,14 +3,12 @@ Algorithm to produce a stable matching.
 """
 
 from algmatch.stableMatchings.stableRoommatesProblem.srAbstract import SRAbstract
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class SRAlgorithm(SRAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.unassigned_roommates = set()
 
         for roommate, r_prefs in self.roommates.items():

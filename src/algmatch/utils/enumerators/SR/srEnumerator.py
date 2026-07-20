@@ -1,9 +1,11 @@
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.stableRoommatesProblem.srAbstract import SRAbstract
 
 
 class SREnumerator(SRAbstract):
     def __init__(self, dictionary):
-        SRAbstract.__init__(self, dictionary=dictionary)
+        source = PreferenceSource(dictionary=dictionary)
+        SRAbstract.__init__(self, source)
         self.M = {r: {"assigned": None} for r in self.roommates}
         self.stable_matching_list = []
 
