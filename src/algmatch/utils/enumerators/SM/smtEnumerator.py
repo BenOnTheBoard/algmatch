@@ -1,12 +1,14 @@
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtAbstract import SMTAbstract
 from algmatch.utils.enumerators.SM.smGenericEnumerator import SMGenericEnumerator
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SMTEnumerator(SMTAbstract, SMGenericEnumerator):
     def __init__(self, dictionary, stability_type):
+        source = PreferenceSource(dictionary=dictionary)
         stability_type = StabilityType.from_value(stability_type)
-        SMTAbstract.__init__(self, dictionary=dictionary, stability_type=stability_type)
+        SMTAbstract.__init__(self, source=source, stability_type=stability_type)
         SMGenericEnumerator.__init__(self)
 
     def has_stability(self) -> bool:

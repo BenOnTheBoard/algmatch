@@ -3,35 +3,21 @@ Stable Marriage Problem With Ties - Abstract class
 """
 
 from copy import deepcopy
-import os
 
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtPreferenceInstance import (
     SMTPreferenceInstance,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SMTAbstract:
     def __init__(
         self,
-        filename: str | None = None,
-        dictionary: dict | None = None,
-        stability_type: StabilityType = None,
+        source: PreferenceSource,
+        stability_type: StabilityType,
     ) -> None:
-        assert filename is not None or dictionary is not None, (
-            "Either filename or dictionary must be provided"
-        )
-        assert not (filename is not None and dictionary is not None), (
-            "Only one of filename or dictionary must be provided"
-        )
-
-        if filename is not None:
-            assert os.path.isfile(filename), f"File {filename} does not exist"
-            self._reader = SMTPreferenceInstance(filename=filename)
-
-        if dictionary is not None:
-            self._reader = SMTPreferenceInstance(dictionary=dictionary)
-
+        self._reader = SMTPreferenceInstance(source)
         self.stability_type = stability_type
 
         self.men = self._reader.men

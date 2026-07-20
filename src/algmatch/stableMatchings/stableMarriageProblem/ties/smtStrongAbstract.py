@@ -6,18 +6,14 @@ Stores Hopcroft-Karp implementation for finding the maximum matching
 from collections import deque
 
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtAbstract import SMTAbstract
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SMTStrongAbstract(SMTAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(
-            filename=filename,
-            dictionary=dictionary,
-            stability_type=StabilityType.STRONG,
-        )
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source, StabilityType.STRONG)
+
         # used to find the critical set and final answer
         self.maximum_matching = {}
         self.dist = {}

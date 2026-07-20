@@ -3,16 +3,13 @@ Algorithm to produce M_z, the woman-optimal, man-pessimal super-stable matching,
 """
 
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtAbstract import SMTAbstract
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SMTSuperWomanOriented(SMTAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(
-            filename=filename, dictionary=dictionary, stability_type=StabilityType.SUPER
-        )
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source, StabilityType.SUPER)
 
         self.unassigned_women = set()
         self.proposed = {m: False for m in self.men}
