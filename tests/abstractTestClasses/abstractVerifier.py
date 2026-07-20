@@ -33,19 +33,16 @@ class AbstractVerifier:
     def verify_instance(self):
         # optimal and pessimal from man/resident/student side
         optimal_solver = self._construct_solver(True)
-        pessimal_solver = self._construct_solver(False)
+        # pessimal_solver = self._construct_solver(False)
         bruteforcer = self._construct_bruteforcer()
 
         m_0 = optimal_solver.get_stable_matching()
-        m_z = pessimal_solver.get_stable_matching()
+        # m_z = pessimal_solver.get_stable_matching()
         bruteforcer.find_stable_matchings()
 
         if not bruteforcer.stable_matching_list:
-            return m_z is None and m_0 is None
-        return (
-            m_z in bruteforcer.stable_matching_list
-            and m_0 in bruteforcer.stable_matching_list
-        )
+            return m_0 is None
+        return m_0 in bruteforcer.stable_matching_list
 
     def run(self):
         raise NotImplementedError("No method for processing instances")

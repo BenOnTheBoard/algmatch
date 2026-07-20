@@ -8,6 +8,7 @@ from itertools import product
 from algmatch.abstractClasses.abstractPreferenceInstanceWithTies import (
     AbstractPreferenceInstanceWithTies,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.studentProjectAllocation.ties.fileReader import FileReader
 from algmatch.stableMatchings.studentProjectAllocation.ties.dictionaryReader import (
     DictionaryReader,
@@ -15,21 +16,13 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.dictionaryReader imp
 
 
 class SPASTPreferenceInstance(AbstractPreferenceInstanceWithTies):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename, dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source=source)
         self._setup_project_lists()
         self._general_setup_procedure()
 
-    def _load_from_file(self, filename: str) -> None:
-        reader = FileReader(filename)
-        self.students = reader.students
-        self.projects = reader.projects
-        self.lecturers = reader.lecturers
-
-    def _load_from_dictionary(self, dictionary: dict) -> None:
-        reader = DictionaryReader(dictionary)
+    def _load(self, source: PreferenceSource) -> None:
+        reader = source.build_reader(FileReader, DictionaryReader)
         self.students = reader.students
         self.projects = reader.projects
         self.lecturers = reader.lecturers

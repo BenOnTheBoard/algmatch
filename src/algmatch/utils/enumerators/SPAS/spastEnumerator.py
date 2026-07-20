@@ -2,15 +2,15 @@ from algmatch.stableMatchings.studentProjectAllocation.ties.spastAbstract import
     SPASTAbstract,
 )
 from algmatch.utils.enumerators.SPAS.spasGenericEnumerator import SPASGenericEnumerator
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class SPASTEnumerator(SPASTAbstract, SPASGenericEnumerator):
     def __init__(self, dictionary, stability_type):
+        source = PreferenceSource(dictionary=dictionary)
         stability_type = StabilityType.from_value(stability_type)
-        SPASTAbstract.__init__(
-            self, dictionary=dictionary, stability_type=stability_type
-        )
+        SPASTAbstract.__init__(self, source=source, stability_type=stability_type)
         SPASGenericEnumerator.__init__(self)
 
     def has_stability(self):
