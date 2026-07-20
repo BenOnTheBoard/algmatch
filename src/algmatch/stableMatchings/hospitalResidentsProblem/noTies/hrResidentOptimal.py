@@ -5,14 +5,12 @@ Algorithm to produce the resident-optimal, hospital-pessimal stable matching.
 from algmatch.stableMatchings.hospitalResidentsProblem.noTies.hrAbstract import (
     HRAbstract,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class HRResidentOptimal(HRAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.unassigned_residents = set()
 
         for resident, prefs in self.residents.items():

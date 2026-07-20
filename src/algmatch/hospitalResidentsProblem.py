@@ -2,14 +2,13 @@
 Class to provide interface for the Hospital/Residents Problem algorithm.
 """
 
-import os
-
 from algmatch.stableMatchings.hospitalResidentsProblem.noTies.hrResidentOptimal import (
     HRResidentOptimal,
 )
 from algmatch.stableMatchings.hospitalResidentsProblem.noTies.hrHospitalOptimal import (
     HRHospitalOptimal,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class HospitalResidentsProblem:
@@ -26,8 +25,7 @@ class HospitalResidentsProblem:
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         :param optimised_side: str, optional, default="resident", whether the algorithm is "resident" (default) or "hospital" sided.
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
 
         assert type(optimised_side) is str, "Param optimised_side must be of type str"
         optimised_side = optimised_side.lower()
@@ -36,9 +34,9 @@ class HospitalResidentsProblem:
         )
 
         if optimised_side == "residents":
-            self.hr_alg = HRResidentOptimal(filename=filename, dictionary=dictionary)
+            self.hr_alg = HRResidentOptimal(source=self.source)
         else:
-            self.hr_alg = HRHospitalOptimal(filename=filename, dictionary=dictionary)
+            self.hr_alg = HRHospitalOptimal(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """
