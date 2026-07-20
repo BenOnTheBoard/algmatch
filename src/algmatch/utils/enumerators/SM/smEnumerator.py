@@ -1,10 +1,12 @@
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.stableMarriageProblem.noTies.smAbstract import SMAbstract
 from algmatch.utils.enumerators.SM.smGenericEnumerator import SMGenericEnumerator
 
 
 class SMEnumerator(SMAbstract, SMGenericEnumerator):
     def __init__(self, dictionary):
-        SMAbstract.__init__(self, dictionary=dictionary)
+        source = PreferenceSource(dictionary=dictionary)
+        SMAbstract.__init__(self, source)
         SMGenericEnumerator.__init__(self)
 
     def has_stability(self) -> bool:
