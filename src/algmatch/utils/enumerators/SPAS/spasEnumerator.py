@@ -1,3 +1,4 @@
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import (
     SPAAbstract,
 )
@@ -6,7 +7,8 @@ from algmatch.utils.enumerators.SPAS.spasGenericEnumerator import SPASGenericEnu
 
 class SPASEnumerator(SPAAbstract, SPASGenericEnumerator):
     def __init__(self, dictionary):
-        SPAAbstract.__init__(self, dictionary=dictionary)
+        source = PreferenceSource(dictionary=dictionary)
+        SPAAbstract.__init__(self, source)
         SPASGenericEnumerator.__init__(self)
 
     def has_stability(self):

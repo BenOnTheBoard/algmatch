@@ -3,30 +3,16 @@ Student Project Allocation - Abstract class
 """
 
 from copy import deepcopy
-import os
 
 from algmatch.stableMatchings.studentProjectAllocation.noTies.spaPreferenceInstance import (
     SPAPreferenceInstance,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class SPAAbstract:
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        assert filename is not None or dictionary is not None, (
-            "Either filename or dictionary must be provided"
-        )
-        assert not (filename is not None and dictionary is not None), (
-            "Only one of filename or dictionary must be provided"
-        )
-
-        if filename is not None:
-            assert os.path.isfile(filename), f"File {filename} does not exist"
-            self._reader = SPAPreferenceInstance(filename=filename)
-
-        if dictionary is not None:
-            self._reader = SPAPreferenceInstance(dictionary=dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        self._reader = SPAPreferenceInstance(source=source)
 
         self.students = self._reader.students
         self.projects = self._reader.projects

@@ -4,15 +4,15 @@ Student Project Allocation - Student Optimal version
 
 from copy import deepcopy
 
-from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import SPAAbstract
+from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import (
+    SPAAbstract,
+)
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class SPAStudentOptimal(SPAAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.delete = {}
         self.unassigned = set()
 
