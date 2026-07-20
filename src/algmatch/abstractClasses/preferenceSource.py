@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, Type
 import os
 
-from abstractClasses.abstractReader import AbstractReader
+from algmatch.abstractClasses.abstractReader import AbstractReader
 
 
 @dataclass(frozen=True)
@@ -20,6 +20,7 @@ class PreferenceSource:
             raise ValueError("Exactly one of filename or dictionary must be provided")
         if self.filename is not None:
             self.filename = os.path.join(os.getcwd(), self.filename)
+            assert os.path.isfile(self.filename), f"File {self.filename} does not exist"
 
     def build_reader(
         self,
