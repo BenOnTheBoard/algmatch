@@ -2,16 +2,15 @@
 Algorithm to produce M_z, the woman-optimal, man-pessimal strongly stable matching, where such a thing exists.
 """
 
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongAbstract import (
     SMTStrongAbstract,
 )
 
 
 class SMTStrongWomanOptimal(SMTStrongAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
 
         self.unassigned_women = set()
         self.proposed = {m: False for m in self.men}

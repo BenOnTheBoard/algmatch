@@ -12,18 +12,13 @@ from copy import deepcopy
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtAbstract import (
     HRTAbstract,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
 class HRTStrongAbstract(HRTAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(
-            filename=filename,
-            dictionary=dictionary,
-            stability_type=StabilityType.STRONG,
-        )
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source, StabilityType.STRONG)
         # used to find the critical set and final answer
         self.maximum_matching = {}
         self.dist = {}

@@ -2,7 +2,6 @@
 Class to provide interface for the Stable Marriage Problem With Ties algorithms.
 """
 
-import os
 from algmatch.stableMatchings.stableMarriageProblem.ties.smtSuperManOriented import (
     SMTSuperManOriented,
 )
@@ -16,6 +15,7 @@ from algmatch.stableMatchings.stableMarriageProblem.ties.smtStrongWomanOptimal i
     SMTStrongWomanOptimal,
 )
 
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
@@ -42,12 +42,8 @@ class StableMarriageProblemWithTies:
         :param optimised_side: str, optional, default="men", whether the algorithm is "men" (default) or "women" sided.
         :param stability_type: str, optional, default=None which kind of matching to look for. Must be either "strong" or "super".
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
-
-        self._validate_and_save_parameters(
-            filename, dictionary, optimised_side, stability_type
-        )
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
+        self._validate_and_save_parameters(optimised_side, stability_type)
         self._set_algorithm()
 
     def _assert_valid_optimised_side(self, optimised_side):
@@ -57,14 +53,10 @@ class StableMarriageProblemWithTies:
             "Optimised side must either be 'men' or 'women'"
         )
 
-    def _validate_and_save_parameters(
-        self, filename, dictionary, optimised_side, stability_type_str
-    ):
+    def _validate_and_save_parameters(self, optimised_side, stability_type_str):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
         self.stability_type = StabilityType.from_value(stability_type_str)
-        self.filename = filename
-        self.dictionary = dictionary
 
     def _set_algorithm(self):
         alg_key = (self.stability_type, self.optimised_side)
@@ -73,7 +65,7 @@ class StableMarriageProblemWithTies:
                 "No algorithm has been implemented for this case."
             )
         alg_class = self.algorithms[alg_key]
-        self.sm_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
+        self.sm_alg = alg_class(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

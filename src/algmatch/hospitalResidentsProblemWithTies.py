@@ -2,8 +2,6 @@
 Class to provide interface for the Hospital/Residents Problem With Ties algorithms.
 """
 
-import os
-
 from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtStrongResidentOptimal import (
     HRTStrongResidentOptimal,
 )
@@ -17,6 +15,7 @@ from algmatch.stableMatchings.hospitalResidentsProblem.ties.hrtSuperHospitalOpti
     HRTSuperHospitalOptimal,
 )
 
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
@@ -43,12 +42,8 @@ class HospitalResidentsProblemWithTies:
         :param optimised_side: str, optional, default="residents", whether the algorithm is "residents" (default) or "hospitals" sided.
         :param stability_type: str, default=None, specifies the stability condition to be solved for.
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
-
-        self._validate_and_save_parameters(
-            filename, dictionary, optimised_side, stability_type
-        )
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
+        self._validate_and_save_parameters(optimised_side, stability_type)
         self._set_algorithm()
 
     def _assert_valid_optimised_side(self, optimised_side):
@@ -58,14 +53,10 @@ class HospitalResidentsProblemWithTies:
             "Optimised side must either be 'residents' or 'hospitals'"
         )
 
-    def _validate_and_save_parameters(
-        self, filename, dictionary, optimised_side, stability_type_str
-    ):
+    def _validate_and_save_parameters(self, optimised_side, stability_type_str):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
         self.stability_type = StabilityType.from_value(stability_type_str)
-        self.filename = filename
-        self.dictionary = dictionary
 
     def _set_algorithm(self):
         alg_key = (self.stability_type, self.optimised_side)
@@ -74,7 +65,7 @@ class HospitalResidentsProblemWithTies:
                 "No algorithm has been implemented for this case."
             )
         alg_class = self.algorithms[alg_key]
-        self.hr_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
+        self.hr_alg = alg_class(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

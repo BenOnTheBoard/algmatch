@@ -2,15 +2,15 @@
 Student Project Allocation - Lecturer Optimal version
 """
 
-from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import SPAAbstract
+from algmatch.stableMatchings.studentProjectAllocation.noTies.spaAbstract import (
+    SPAAbstract,
+)
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class SPALecturerOptimal(SPAAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.under_subscribed_lecturers = list(self.lecturers.keys())
 
         for student in self.students:
@@ -27,10 +27,6 @@ class SPALecturerOptimal(SPAAbstract):
         self.projects[project]["list"].remove(student)
 
     def _check_pair_conditions(self, s_i, p_j, L_k):
-        # s_i is not provisionally assigned to p_j
-        # and p_j in P_k is under subscribed
-        # and s_i in L_k^j
-
         return (
             self.M[s_i]["assigned"] != p_j
             and p_j in self.lecturers[L_k]["projects"]

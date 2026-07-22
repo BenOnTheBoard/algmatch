@@ -6,10 +6,13 @@ Class to provide interface for the Student Project Allocation stable matching al
 :param optimised_side: str, optional, default="student", whether the algorithm is "student" (default) or "lecturer" sided.
 """
 
-import os
-
-from algmatch.stableMatchings.studentProjectAllocation.noTies.spaStudentOptimal import SPAStudentOptimal
-from algmatch.stableMatchings.studentProjectAllocation.noTies.spaLecturerOptimal import SPALecturerOptimal
+from algmatch.stableMatchings.studentProjectAllocation.noTies.spaStudentOptimal import (
+    SPAStudentOptimal,
+)
+from algmatch.stableMatchings.studentProjectAllocation.noTies.spaLecturerOptimal import (
+    SPALecturerOptimal,
+)
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class StudentProjectAllocation:
@@ -26,8 +29,7 @@ class StudentProjectAllocation:
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         :param optimised_side: str, optional, default="student", whether the algorithm is "student" (default) or "lecturer" sided.
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
 
         assert type(optimised_side) is str, "Param optimised_side must be of type str"
         optimised_side = optimised_side.lower()
@@ -36,9 +38,9 @@ class StudentProjectAllocation:
         )
 
         if optimised_side == "students":
-            self.spa_alg = SPAStudentOptimal(filename=filename, dictionary=dictionary)
+            self.spa_alg = SPAStudentOptimal(source=self.source)
         else:
-            self.spa_alg = SPALecturerOptimal(filename=filename, dictionary=dictionary)
+            self.spa_alg = SPALecturerOptimal(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

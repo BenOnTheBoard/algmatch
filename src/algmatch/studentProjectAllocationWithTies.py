@@ -2,12 +2,11 @@
 Class to provide interface for the Student Project Allocation With Ties algorithms.
 """
 
-import os
-
 from algmatch.stableMatchings.studentProjectAllocation.ties.spastSuperStudentOptimal import (
     SPASTSuperStudentOptimal,
 )
 
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 from algmatch.abstractClasses.stabilityType import StabilityType
 
 
@@ -31,12 +30,8 @@ class StudentProjectAllocationWithTies:  #
         :param stability_type: str, default=None, specifies the stability condition to be solved for.
         """
 
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
-
-        self._validate_and_save_parameters(
-            filename, dictionary, optimised_side, stability_type
-        )
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
+        self._validate_and_save_parameters(optimised_side, stability_type)
         self._set_algorithm()
 
     def _assert_valid_optimised_side(self, optimised_side):
@@ -46,14 +41,10 @@ class StudentProjectAllocationWithTies:  #
             "Optimised side must either be 'students' or 'lecturers'"
         )
 
-    def _validate_and_save_parameters(
-        self, filename, dictionary, optimised_side, stability_type
-    ):
+    def _validate_and_save_parameters(self, optimised_side, stability_type):
         self._assert_valid_optimised_side(optimised_side)
         self.optimised_side = optimised_side.lower()
         self.stability_type = StabilityType.from_value(stability_type)
-        self.filename = filename
-        self.dictionary = dictionary
 
     def _set_algorithm(self):
         alg_key = (self.stability_type, self.optimised_side)
@@ -62,7 +53,7 @@ class StudentProjectAllocationWithTies:  #
                 "No algorithm has been implemented for this case."
             )
         alg_class = self.algorithms[alg_key]
-        self.spas_alg = alg_class(filename=self.filename, dictionary=self.dictionary)
+        self.spas_alg = alg_class(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

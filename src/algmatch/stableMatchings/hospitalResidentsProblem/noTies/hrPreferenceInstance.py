@@ -5,26 +5,22 @@ Store preference lists for Hospital/Residents Problem stbale matching algorithm.
 from algmatch.abstractClasses.abstractPreferenceInstance import (
     AbstractPreferenceInstance,
 )
-from algmatch.stableMatchings.hospitalResidentsProblem.noTies.fileReader import FileReader
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
+from algmatch.stableMatchings.hospitalResidentsProblem.noTies.fileReader import (
+    FileReader,
+)
 from algmatch.stableMatchings.hospitalResidentsProblem.noTies.dictionaryReader import (
     DictionaryReader,
 )
 
 
 class HRPreferenceInstance(AbstractPreferenceInstance):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename, dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source=source)
         self._general_setup_procedure()
 
-    def _load_from_file(self, filename: str) -> None:
-        reader = FileReader(filename)
-        self.residents = reader.residents
-        self.hospitals = reader.hospitals
-
-    def _load_from_dictionary(self, dictionary: dict) -> None:
-        reader = DictionaryReader(dictionary)
+    def _load(self, source: PreferenceSource) -> None:
+        reader = source.build_reader(FileReader, DictionaryReader)
         self.residents = reader.residents
         self.hospitals = reader.hospitals
 

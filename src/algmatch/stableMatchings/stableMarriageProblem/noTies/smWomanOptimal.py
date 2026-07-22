@@ -3,14 +3,12 @@ Algorithm to produce M_z, the woman-optimal, man-pessimal stable matching, where
 """
 
 from algmatch.stableMatchings.stableMarriageProblem.noTies.smAbstract import SMAbstract
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class SMWomanOptimal(SMAbstract):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename=filename, dictionary=dictionary)
-
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
         self.unassigned_women = set()
 
         for man in self.men:

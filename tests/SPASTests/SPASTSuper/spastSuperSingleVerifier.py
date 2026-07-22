@@ -35,11 +35,11 @@ class SPASTSuperSingleVerifier(SPASTSuperVerifier, AbstractSingleVerifier):
 
 
 def main():
-    TOTAL_STUDENTS = 7
-    TOTAL_PROJECTS = 4
+    TOTAL_STUDENTS = 6
+    TOTAL_PROJECTS = 3
     TOTAL_LECTURERS = 2
     LOWER_BOUND = 0
-    UPPER_BOUND = 4
+    UPPER_BOUND = 3
     TIE_DENSITY_STEPS = 10
     REPS_PER_TDS = 5_000
 

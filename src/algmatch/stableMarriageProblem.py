@@ -2,14 +2,14 @@
 Class to provide interface for the Stable Marriage Problem algorithm.
 """
 
-import os
-
 from algmatch.stableMatchings.stableMarriageProblem.noTies.smManOptimal import (
     SMManOptimal,
 )
 from algmatch.stableMatchings.stableMarriageProblem.noTies.smWomanOptimal import (
     SMWomanOptimal,
 )
+
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 
 class StableMarriageProblem:
@@ -26,8 +26,7 @@ class StableMarriageProblem:
         :param dictionary: dict, optional, default=None, the dictionary of preferences.
         :param optimised_side: str, optional, default="men", whether the algorithm is "men" (default) or "woman" sided.
         """
-        if filename is not None:
-            filename = os.path.join(os.getcwd(), filename)
+        self.source = PreferenceSource(filename=filename, dictionary=dictionary)
 
         assert type(optimised_side) is str, "Param optimised_side must be of type str"
         optimised_side = optimised_side.lower()
@@ -36,9 +35,9 @@ class StableMarriageProblem:
         )
 
         if optimised_side == "men":
-            self.sm_alg = SMManOptimal(filename=filename, dictionary=dictionary)
+            self.sm_alg = SMManOptimal(source=self.source)
         else:
-            self.sm_alg = SMWomanOptimal(filename=filename, dictionary=dictionary)
+            self.sm_alg = SMWomanOptimal(source=self.source)
 
     def get_stable_matching(self) -> dict | None:
         """

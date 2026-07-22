@@ -5,15 +5,14 @@ Abstract class to store preference lists for both sides in matching problems tha
 from algmatch.abstractClasses.abstractPreferenceInstance import (
     AbstractPreferenceInstance,
 )
+from algmatch.abstractClasses.preferenceSource import PreferenceSource
 
 from algmatch.errors.InstanceSetupErrors import PrefRepError, PrefNotFoundError
 
 
 class AbstractPreferenceInstanceWithTies(AbstractPreferenceInstance):
-    def __init__(
-        self, filename: str | None = None, dictionary: dict | None = None
-    ) -> None:
-        super().__init__(filename, dictionary)
+    def __init__(self, source: PreferenceSource) -> None:
+        super().__init__(source)
 
     def any_repetitions(self, prefs):
         seen_count = 0
