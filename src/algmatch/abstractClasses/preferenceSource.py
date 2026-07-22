@@ -5,7 +5,7 @@ import os
 from algmatch.abstractClasses.abstractReader import AbstractReader
 
 
-@dataclass(frozen=True)
+@dataclass
 class PreferenceSource:
     """
     Unified representation of preference input for files and dictionaries.
