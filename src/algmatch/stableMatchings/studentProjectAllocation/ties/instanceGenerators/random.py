@@ -12,16 +12,20 @@ from .abstract import AbstractInstanceGenerator
 class SPASTIG_Random(AbstractInstanceGenerator):
     def _generate_students(self):
         for student in self._sp:
-            length = random.randint(self._li, self._lj) # randomly decide length of preference list
+            length = random.randint(
+                self._li, self._lj
+            )  # randomly decide length of preference list
             project_list = list(self._plc.keys())
             for i in range(length):
                 p = random.choice(project_list)
-                project_list.remove(p) # avoid picking same project twice
-                if i == 0: self._sp[student].append([p])
+                project_list.remove(p)  # avoid picking same project twice
+                if i == 0:
+                    self._sp[student].append([p])
                 else:
-                    self._assign_using_density(self._sp[student], p, self.student_tie_density)
+                    self._assign_using_density(
+                        self._sp[student], p, self.student_tie_density
+                    )
                 self._plc[p][2].append(student)
-
 
     def _generate_lecturers(self):
         # number of projects lecturer can offer is between 1 and ceil(|projects| / |lecturers|)
@@ -47,15 +51,20 @@ class SPASTIG_Random(AbstractInstanceGenerator):
         # decide ordered preference and capacity
         for lecturer in self._lp:
             pref = list(set(self._lp[lecturer][2][:]))
-            if not pref: continue
+            if not pref:
+                continue
             random.shuffle(pref)
             pref_with_ties = [[pref[0]]]
 
             for student in pref[1:]:
-                pref_with_ties = self._assign_using_density(pref_with_ties, student, self.lecturer_tie_density)
+                pref_with_ties = self._assign_using_density(
+                    pref_with_ties, student, self.lecturer_tie_density
+                )
             self._lp[lecturer][2] = pref_with_ties
 
             if self._force_lecturer_capacity:
                 self._lp[lecturer][0] = self._force_lecturer_capacity
             else:
-                self._lp[lecturer][0] = random.randint(self._lp[lecturer][3], self._lp[lecturer][4])
+                self._lp[lecturer][0] = random.randint(
+                    self._lp[lecturer][3], self._lp[lecturer][4]
+                )

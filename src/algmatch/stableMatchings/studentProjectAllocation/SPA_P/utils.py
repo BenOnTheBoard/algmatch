@@ -5,7 +5,9 @@ Set of utility functions for SPA-P.
 import numpy as np
 from pprint import pprint
 
-from algmatch.stableMatchings.studentProjectAllocation.SPA_P.fileReader import FileReader
+from algmatch.stableMatchings.studentProjectAllocation.SPA_P.fileReader import (
+    FileReader,
+)
 
 
 def instance_to_numpy(instance_filename: str):
@@ -34,16 +36,20 @@ def instance_to_numpy(instance_filename: str):
     # fill in student preferences
     for student in r.students:
         pref_list_len = len(r.students[student][0])
-        sum_to_pref_list_len = (pref_list_len ** 2 + pref_list_len) // 2
+        sum_to_pref_list_len = (pref_list_len**2 + pref_list_len) // 2
         for i, project in enumerate(r.students[student][0]):
-            instance[int(student[1:])-1, int(project[1:])-1] = (pref_list_len - i) / (sum_to_pref_list_len)
+            instance[int(student[1:]) - 1, int(project[1:]) - 1] = (
+                pref_list_len - i
+            ) / (sum_to_pref_list_len)
 
     # fill in lecturer preferences
     for lecturer in r.lecturers:
         pref_list_len = len(r.lecturers[lecturer][1])
-        sum_to_pref_list_len = (pref_list_len ** 2 + pref_list_len) // 2
+        sum_to_pref_list_len = (pref_list_len**2 + pref_list_len) // 2
         for i, project in enumerate(r.lecturers[lecturer][1]):
-            instance[num_students + int(lecturer[1:])-1, int(project[1:])-1] = (pref_list_len - i) / (sum_to_pref_list_len)
+            instance[num_students + int(lecturer[1:]) - 1, int(project[1:]) - 1] = (
+                pref_list_len - i
+            ) / (sum_to_pref_list_len)
 
     return instance
 
@@ -68,8 +74,10 @@ def solution_to_numpy(solution_filename: str, project_size: int):
     # fill in student preferences
     for student in r.solution:
         for project in r.solution[student][1:]:
-            if project != '': solution[int(student[1:])-1, int(project)-1] = 1
-            else: solution[int(student[1:])-1, int(project)-1] = 0
+            if project != "":
+                solution[int(student[1:]) - 1, int(project) - 1] = 1
+            else:
+                solution[int(student[1:]) - 1, int(project) - 1] = 0
 
     return solution
 
