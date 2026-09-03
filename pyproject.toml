@@ -22,3 +22,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/BenOnTheBoard/algmatch"
 Issues = "https://github.com/BenOnTheBoard/algmatch/issues"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
